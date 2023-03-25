@@ -1,0 +1,91 @@
+version: '3.4'
+ 
+services:
+  # Traefik反代服务器
+  traefik:
+    image: traefik:latest
+    restart: always
+    ports:
+      # OpenWRT的iptables暂时不支持ingress模式,须使用host模式映射端口才能接收到来自主路由转发的WAN请求
+      #- "8000:80" # HTTP
+      #- "8443:443" # HTTPS
+      #- "8080:8080"  # DashBoard
+      #- "8022:8022"  # SSH
+      - target: 80
+        published: 8000
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 8443
+        protocol: tcp
+        mode: host  
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host   
+      - target: 8090
+        published: 8090
+        protocol: tcp
+        mode: host
+    #以下CLI方式的静态配置，全部改为File静态配置在/etc/traefik/traefik.yml中配置
+    #command:
+      #- --api.insecure=true # set to 'false' on production
+      #- --api.dashboard=true # see https://docs.traefik.io/v2.0/operations/dashboard/#secure-mode for how to secure the dashboard
+      #- --api.debug=true # enable additional endpoints for debugging and profiling
+      #- --log.level=DEBUG # debug while we get it working, for more levels/info see https://docs.traefik.io/observability/logs/
+      #- --providers.docker=true
+      #- --providers.docker.swarmMode=true
+      #- --providers.docker.exposedbydefault=false
+      #- --providers.docker.network=network_cluster
+      #- --entryPoints.web.address=:80
+    environment:
+      # 直接使用Portainer容器内的环境变量
+      ALICLOUD_ACCESS_KEY: ${ALIYUN_API_ID}
+      ALICLOUD_SECRET_KEY: ${ALIYUN_API_KEY}
+      ALICLOUD_REGION_ID: ${ALIYUN_ZONEID}
+      DOMAIN_NAS: ${DOMAIN_NAS}
+      DOMAIN_PVE: ${DOMAIN_PVE}
+      DOMAIN_SWARM: ${DOMAIN_SWARM}
+      TZ: ${TZ}    
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - homenas_traefik:/etc/traefik
+    networks:
+      - network_cluster
+    deploy:
+      placement:
+        constraints:
+          - node.labels.type == router 
+      #以下Labels方式的动态配置，全部改为File的动态配置在/etc/traefik/dynamic/*.yml中配置
+      #labels: 
+        #- "traefik.enable=true"
+        # Dashboard配置
+        #- "traefik.http.routers.api.rule=Host(`traefik.cloudvalley.name`)"
+        #- "traefik.http.routers.api.service=api@internal" # Let the dashboard access the traefik api
+        #- "traefik.http.routers.api.entrypoints=websecure" # Let the dashboard access the traefik api
+        # Dashboard验证
+        #- "traefik.http.routers.api.middlewares=api-auth@docker"
+        #- "traefik.http.middlewares.api-auth.basicauth.users=waylon:$$apr1$$QkMu0EI5$$1TjyNCHvtlqrJpk9TFVvc."
+        #- "traefik.http.services.dummyService.loadbalancer.server.port=9090"  # 增加了一个负载均衡的端品到taefik的dashboard业务，端口只要是业务没有用的随机的就可以
+        # 全局重定向匹配路由规则，这里匹配了所有路由
+        #- "traefik.http.routers.http-catchall.rule=HostRegexp(`{any:.+}`)"
+        #- "traefik.http.routers.http-catchall.entrypoints=web"
+        #- "traefik.http.routers.http-catchall.middlewares=noauth-chain@file"
+        #- "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+        #- "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
+        #- "traefik.http.services.noop.loadbalancer.server.port=9999"  
+
+
+    
+networks:
+  network_cluster:
+    external: true
+
+volumes:
+  # 挂载NFS卷，用于Swarm集群node迁移时保持数据
+  homenas_traefik: 
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=192.168.11.99,rw,nfsvers=4
+      device: :/volume1/docker/swarm/public/traefik
