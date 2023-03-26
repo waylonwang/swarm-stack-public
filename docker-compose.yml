@@ -48,7 +48,7 @@ services:
       #DOMAIN_SWARM: ${DOMAIN_SWARM}
       #TZ: ${TZ}
     env_file:
-      - ./stack.env
+      - /data/stack.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - homenas_traefik:/etc/traefik
