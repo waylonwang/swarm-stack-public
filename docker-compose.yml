@@ -38,16 +38,15 @@ services:
       #- --providers.docker.exposedbydefault=false
       #- --providers.docker.network=network_cluster
       #- --entryPoints.web.address=:80
-    environment:
+    #environment:
       # 直接使用Portainer容器内的环境变量
-      ALICLOUD_ACCESS_KEY: ${ALIYUN_API_ID}
-      ALICLOUD_SECRET_KEY: ${ALIYUN_API_KEY}
-      ALICLOUD_REGION_ID: ${ALIYUN_ZONEID}
-      DOMAIN_NAS: ${DOMAIN_NAS}
-      DOMAIN_PVE: ${DOMAIN_PVE}
-      DOMAIN_SWARM: ${DOMAIN_SWARM}
-      TZ: ${TZ}
-      AAA: BBB
+      #ALICLOUD_ACCESS_KEY: ${ALIYUN_API_ID}
+      #ALICLOUD_SECRET_KEY: ${ALIYUN_API_KEY}
+      #ALICLOUD_REGION_ID: ${ALIYUN_ZONEID}
+      #DOMAIN_NAS: ${DOMAIN_NAS}
+      #DOMAIN_PVE: ${DOMAIN_PVE}
+      #DOMAIN_SWARM: ${DOMAIN_SWARM}
+      #TZ: ${TZ}
     env_file:     
       - ../../stack.env
     volumes:
