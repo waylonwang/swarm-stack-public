@@ -81,11 +81,14 @@ networks:
   network_cluster:
     external: true
 
+x-common-keys-volume: &common-keys-volume
+  type: nfs
+  o: addr=192.168.11.99,rw,nfsvers=4
+
 volumes:
   # 挂载NFS卷，用于Swarm集群node迁移时保持数据
   homenas_traefik: 
     driver: local
     driver_opts:
-      type: nfs
-      o: addr=192.168.11.99,rw,nfsvers=4
+      <<: *common-keys-volume
       device: :/volume1/docker/swarm/public/traefik
