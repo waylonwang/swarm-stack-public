@@ -77,8 +77,6 @@ services:
         #- "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
         #- "traefik.http.services.noop.loadbalancer.server.port=9999"  
 
-
-    
 networks:
   network_cluster:
     external: true
