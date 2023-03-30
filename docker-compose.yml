@@ -38,20 +38,18 @@ services:
       #- --providers.docker.exposedbydefault=false
       #- --providers.docker.network=network_cluster
       #- --entryPoints.web.address=:80
-    #environment:
+    environment:
       # 直接使用Portainer容器内的环境变量
-      #ALICLOUD_ACCESS_KEY: ${ALIYUN_API_ID}
-      #ALICLOUD_SECRET_KEY: ${ALIYUN_API_KEY}
-      #ALICLOUD_REGION_ID: ${ALIYUN_ZONEID}
-      #DOMAIN_NAS: ${DOMAIN_NAS}
-      #DOMAIN_PVE: ${DOMAIN_PVE}
-      #DOMAIN_SWARM: ${DOMAIN_SWARM}
-      #TZ: ${TZ}
-    env_file:     
-      - ../../stack.env
+      ALICLOUD_ACCESS_KEY: ${ALICLOUD_ACCESS_KEY}
+      ALICLOUD_SECRET_KEY: ${ALICLOUD_SECRET_KEY}
+      ALICLOUD_REGION_ID: ${ALICLOUD_REGION_ID}
+      DOMAIN_NAS: ${DOMAIN_NAS}
+      DOMAIN_PVE: ${DOMAIN_PVE}
+      DOMAIN_SWARM: ${DOMAIN_SWARM}
+      TZ: ${TZ}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - homenas_traefik:/etc/traefik
+      - nfs_traefik:/etc/traefik
     networks:
       - network_cluster
     deploy:
@@ -83,12 +81,12 @@ networks:
 
 x-common-keys-volume: &common-keys-volume
   type: nfs
-  o: addr=192.168.11.99,rw,nfsvers=4
+  o: addr=${NFS_SERVER},rw,nfsvers=4
 
 volumes:
   # 挂载NFS卷，用于Swarm集群node迁移时保持数据
-  homenas_traefik: 
+  nfs_traefik: 
     driver: local
     driver_opts:
       <<: *common-keys-volume
-      device: :/volume1/docker/swarm/public/traefik
+      device: :${NFS_DEVICE}/public/traefik
