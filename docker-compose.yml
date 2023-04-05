@@ -5,6 +5,18 @@ services:
   # Traefik反代服务器
   traefik:
     image: traefik:latest
+    #以下CLI方式的静态配置，全部改为File静态配置在/etc/traefik/traefik.yml中配置
+    #command:
+    #- --api.insecure=true # set to 'false' on production
+    #- --api.dashboard=true # see https://docs.traefik.io/v2.0/operations/dashboard/#secure-mode for how to secure the dashboard
+    #- --api.debug=true # enable additional endpoints for debugging and profiling
+    #- --log.level=DEBUG # debug while we get it working, for more levels/info see https://docs.traefik.io/observability/logs/
+    #- --providers.docker=true
+    #- --providers.docker.swarmMode=true
+    #- --providers.docker.exposedbydefault=false
+    #- --providers.docker.network=network_cluster
+    #- --entryPoints.web.address=:80
+    networks: [network_cluster]
     restart: always
     ports:
       # OpenWRT的iptables暂时不支持ingress模式,须使用host模式映射端口才能接收到来自主路由转发的WAN请求
@@ -28,17 +40,6 @@ services:
         published: 8090
         protocol: tcp
         mode: host
-    #以下CLI方式的静态配置，全部改为File静态配置在/etc/traefik/traefik.yml中配置
-    #command:
-    #- --api.insecure=true # set to 'false' on production
-    #- --api.dashboard=true # see https://docs.traefik.io/v2.0/operations/dashboard/#secure-mode for how to secure the dashboard
-    #- --api.debug=true # enable additional endpoints for debugging and profiling
-    #- --log.level=DEBUG # debug while we get it working, for more levels/info see https://docs.traefik.io/observability/logs/
-    #- --providers.docker=true
-    #- --providers.docker.swarmMode=true
-    #- --providers.docker.exposedbydefault=false
-    #- --providers.docker.network=network_cluster
-    #- --entryPoints.web.address=:80
     environment:
       # 直接使用Portainer容器内的环境变量
       ALICLOUD_ACCESS_KEY: ${ALICLOUD_ACCESS_KEY}
@@ -51,8 +52,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - nfs_traefik:/etc/traefik
-    networks:
-      - network_cluster
     deploy:
       placement:
         constraints:
