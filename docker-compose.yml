@@ -79,7 +79,7 @@ services:
         - homepage.icon=traefik.png
         - homepage.href=https://traefik.${DOMAIN_SWARM}:4/
         - homepage.description=代理服务器
-        - homepage.ping=http://traefik:8080
+        - homepage.ping=http://traefik:80
         - homepage.widget.type=traefik
         - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:4    
         - homepage.widget.username=${TR_USERNAME}  
