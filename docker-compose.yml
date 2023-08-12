@@ -75,6 +75,29 @@ services:
       #- "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
       #- "traefik.http.services.noop.loadbalancer.server.port=9999"
 
+  # 主页服务
+  homepage:
+    image: ghcr.io/benphelps/homepage:latest
+    networks: [network_cluster]
+    restart: on-failure
+    volumes:
+      - nfs_homepage:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.homepage.rule=Host(`home.${DOMAIN_SWARM}`)"
+        - "traefik.http.routers.homepage.entrypoints=websecure"
+        - "traefik.http.routers.homepage.service=homepage"
+        - "traefik.http.routers.homepage.middlewares=noauth-chain@file"
+        - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.type == vm
+
 networks:
   network_cluster:
     external: true
@@ -90,3 +113,8 @@ volumes:
     driver_opts:
       <<: *common-keys-volume
       device: :${NFS_DEVICE}/public/traefik
+  nfs_homepage:
+    driver: local
+    driver_opts:
+      <<: *common-keys-volume
+      device: :${NFS_DEVICE}/public/homepage
