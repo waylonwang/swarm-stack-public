@@ -82,8 +82,8 @@ services:
         - homepage.ping=http://traefik:80
         - homepage.widget.type=traefik
         - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:4    
-        - homepage.widget.username=${TR_USERNAME}  
-        - homepage.widget.password=${TR_PASSWORD}    
+        - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}  
+        - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}    
   # 主页服务
   homepage:
     image: ghcr.io/benphelps/homepage:latest
