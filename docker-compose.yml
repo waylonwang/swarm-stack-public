@@ -127,7 +127,7 @@ services:
         - homepage.group=Base
         - homepage.name=Clash
         - homepage.icon=clash.png
-        - homepage.href=https://clash.${DOMAIN_SWARM}:4/
+        - homepage.href=https://clash.${DOMAIN_SWARM}:4/ui
         - homepage.description=VPN代理服务         
       mode: replicated
       replicas: 1
