@@ -116,6 +116,7 @@ services:
     ports:
       - 7890:7890
       - 7891:7891      
+      - 19090:9090      
     deploy:
       labels:
         - "traefik.enable=true"
