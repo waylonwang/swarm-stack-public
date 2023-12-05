@@ -132,7 +132,7 @@ services:
         - homepage.icon=clash.png
         - homepage.href=https://clash.${DOMAIN_SWARM}:4/ui
         - homepage.description=VPN代理服务         
-        - homepage.ping=http://clash:9090
+        - homepage.siteMonitor=http://clash:9090
         - homepage.weight=4
       mode: replicated
       replicas: 1
