@@ -81,6 +81,7 @@ services:
         - homepage.icon=traefik.png
         - homepage.href=https://traefik.${DOMAIN_SWARM}:4/
         - homepage.description=代理服务器
+        - homepage.ping=traefik 
         - homepage.widget.type=traefik
         - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:4    
         - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}  
