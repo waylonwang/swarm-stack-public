@@ -142,6 +142,37 @@ services:
           - node.role == manager
           - node.labels.type == vm          
 
+
+  dockerui:
+    image: joinsunsoft/docker.ui:latest
+    networks: [network_cluster]
+    restart: on-failure    
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:      
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.dockerui.rule=Host(`dockerui.${DOMAIN_SWARM}`)"
+        - "traefik.http.routers.dockerui.entrypoints=websecure"
+        - "traefik.http.routers.dockerui.service=dockerui"
+        - "traefik.http.routers.dockerui.middlewares=cors-headers@file,noauth-chain@file"
+        - "traefik.http.services.dockerui.loadbalancer.server.port=8999"
+        - homepage.group=Base & Public
+        - homepage.name=Docker UI
+        - homepage.icon=docker.png
+        - homepage.href=https://dockerui.${DOMAIN_SWARM}:4/
+        - homepage.description=Docker UI
+        - homepage.siteMonitor=http://dockerui
+        - homepage.weight=10
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.type == vm 
+
 networks:
   network_cluster:
     external: true
