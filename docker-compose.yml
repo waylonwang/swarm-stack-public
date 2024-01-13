@@ -80,7 +80,7 @@ services:
         - homepage.name=Traefik
         - homepage.icon=traefik.png
         - homepage.href=https://traefik.${DOMAIN_SWARM}:4/
-        - homepage.description=代理服务器
+        - homepage.description=域名反向代理服务
         - homepage.ping=traefik 
         - homepage.weight=10
         - homepage.widget.type=traefik
@@ -134,7 +134,7 @@ services:
         - homepage.name=SwarmClash
         - homepage.icon=clash.png
         - homepage.href=https://clash.${DOMAIN_SWARM}:4/ui
-        - homepage.description=SwarmClash代理服务         
+        - homepage.description=SwarmClash科学代理服务         
         - homepage.siteMonitor=http://clash:9090
         - homepage.weight=30
       mode: replicated
