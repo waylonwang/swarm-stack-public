@@ -108,7 +108,8 @@ services:
         constraints:
           - node.role == manager
           - node.labels.type == vm
-  # VPN代理服务
+
+  # VPN代理服务 
   clash:
     image: dreamacro/clash:latest
     networks: [network_cluster]
@@ -140,7 +141,46 @@ services:
       placement:
         constraints:
           - node.role == manager
-          - node.labels.type == vm          
+          - node.labels.type == vm                    
+
+  singbox:
+    image: ghcr.io/sagernet/sing-box:latest
+    entrypoint: ["/bin/bash", "/data/entry.sh"]    
+    networks: [network_cluster]
+    restart: on-failure
+    cap_add:
+      - NET_ADMIN    
+    devices:
+      - /dev/net/tun
+    volumes:
+      - nfs_singbox_data:/data
+    ports:
+      - 20080:80
+      - 20443:443
+      - 28080:8080
+      - 28090:8090
+      - 10080-10099:10080-10099/udp
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.singbox.rule=Host(`singbox.${DOMAIN_SWARM}`)"
+        - "traefik.http.routers.singbox.entrypoints=websecure"
+        - "traefik.http.routers.singbox.service=singbox"
+        - "traefik.http.routers.singbox.middlewares=noauth-chain@file"
+        - "traefik.http.services.singbox.loadbalancer.server.port=9090"  
+        - homepage.group=Base & Public
+        - homepage.name=Singbox
+        - homepage.icon=clash.png
+        - homepage.href=https://singbox.${DOMAIN_SWARM}:4/
+        - homepage.description=VPN代理服务         
+        - homepage.siteMonitor=http://singbox:9090
+        - homepage.weight=5
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.type == vm 
 
 networks:
   network_cluster:
@@ -172,3 +212,8 @@ volumes:
     driver_opts:
       <<: *common-keys-volume
       device: :${NFS_DEVICE}/public/clash/ui
+  nfs_singbox_data:
+    driver: local
+    driver_opts:
+      <<: *common-keys-volume
+      device: :${NFS_DEVICE}/public/singbox/data
