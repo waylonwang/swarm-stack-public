@@ -154,6 +154,7 @@ services:
       - /dev/net/tun
     volumes:
       - nfs_singbox_data:/data
+      - nfs_singbox_tls:/tls
     ports:
       - 20080:80
       - 20443:443
@@ -217,3 +218,8 @@ volumes:
     driver_opts:
       <<: *common-keys-volume
       device: :${NFS_DEVICE}/public/singbox/data
+  nfs_singbox_tls:
+    driver: local
+    driver_opts:
+      <<: *common-keys-volume
+      device: :${NFS_DEVICE}/public/singbox/tls
