@@ -82,6 +82,7 @@ services:
         - homepage.href=https://traefik.${DOMAIN_SWARM}:4/
         - homepage.description=代理服务器
         - homepage.ping=traefik 
+        - homepage.weight=10
         - homepage.widget.type=traefik
         - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:4    
         - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}  
@@ -130,12 +131,12 @@ services:
         - "traefik.http.routers.clash.middlewares=noauth-chain@file"
         - "traefik.http.services.clash.loadbalancer.server.port=9090"  
         - homepage.group=Base & Public
-        - homepage.name=Clash
+        - homepage.name=SwarmClash
         - homepage.icon=clash.png
         - homepage.href=https://clash.${DOMAIN_SWARM}:4/ui
-        - homepage.description=VPN代理服务         
+        - homepage.description=SwarmClash代理服务         
         - homepage.siteMonitor=http://clash:9090
-        - homepage.weight=4
+        - homepage.weight=30
       mode: replicated
       replicas: 1
       placement:
