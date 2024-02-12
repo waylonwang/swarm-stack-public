@@ -162,7 +162,6 @@ services:
         - "traefik.http.routers.headscale.service=headscale"
         - "traefik.http.routers.headscale.middlewares=noauth-chain@file"
         - "traefik.http.services.headscale.loadbalancer.server.port=8080"
-        - "traefik.enable=true"
         - "traefik.http.routers.headscale-metric.rule=Host(`headscale-metric.${DOMAIN_SWARM}`)"
         - "traefik.http.routers.headscale-metric.entrypoints=websecure"
         - "traefik.http.routers.headscale-metric.service=headscale-metric"
