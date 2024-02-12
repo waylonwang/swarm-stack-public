@@ -148,6 +148,7 @@ services:
   # Tailscale VPN服务 
   headscale:
     image: headscale/headscale:0.22.3
+    command: serve
     networks: [network_cluster]
     restart: on-failure
     volumes:
