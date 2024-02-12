@@ -1,4 +1,4 @@
-# Update Time: 2023-12-19 17:42
+# Update Time: 2024-01-12 14:30
 version: "3.4"
 
 services:
@@ -57,6 +57,7 @@ services:
     deploy:
       placement:
         constraints:
+          - node.role == manager
           - node.labels.type == router
       #以下Labels方式的动态配置，全部改为File的动态配置在/etc/traefik/dynamic/*.yml中配置
       labels:
@@ -118,10 +119,10 @@ services:
     volumes:
       - nfs_clash_config:/root/.config/clash
       - nfs_clash_ui:/ui
-    ports:
-      - 7890:7890
-      - 7891:7891      
-      - 9090:9090  
+    # ports:
+    #   - 7890:7890
+    #   - 7891:7891      
+    #   - 9090:9090  
     deploy:
       labels:
         - "traefik.enable=true"
@@ -142,7 +143,83 @@ services:
       placement:
         constraints:
           - node.role == manager
-          - node.labels.type == vm                    
+          - node.labels.type == vm 
+
+  # Tailscale VPN服务 
+  headscale:
+    image: headscale/headscale:0.22.3
+    networks: [network_cluster]
+    restart: on-failure
+    volumes:
+      - nfs_headscale_config:/etc/headscale
+      - nfs_headscale_data:/var/lib/headscale
+    ports:
+      - 8080:8080
+      - 9090:9090      
+      - 3478:3478/udp  
+    deploy:
+      # labels:
+        # - "traefik.enable=true"
+        # - "traefik.http.routers.headscale.rule=Host(`headscale.${DOMAIN_SWARM}`)"
+        # - "traefik.http.routers.headscale.entrypoints=websecure"
+        # - "traefik.http.routers.headscale.service=headscale"
+        # - "traefik.http.routers.headscale.middlewares=noauth-chain@file"
+        # - "traefik.http.services.headscale.loadbalancer.server.port=9090"  
+        # - homepage.group=Base & Public
+        # - homepage.name=Headscale
+        # - homepage.icon=tailscale.png
+        # - homepage.href=https://headscale.${DOMAIN_SWARM}:4/ui
+        # - homepage.description=SwarmClash科学代理服务         
+        # - homepage.siteMonitor=http://headscale:8080
+        # - homepage.weight=40
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.type == router 
+
+  # Headscale WebUI 
+  headscale-webui:
+    image: ifargle/headscale-webui:latest
+    networks: [network_cluster]
+    restart: on-failure
+    volumes:
+      - nfs_headscale_config:/etc/headscale:ro
+      - nfs_headscale_ui:/data
+    environment:
+      # 直接使用Portainer容器内的环境变量
+      HS_SERVER: ${HEADSCALE_HS_SERVER}
+      DOMAIN_NAME: ${HEADSCALE_DOMAIN_NAME}
+      SCRIPT_NAME: ${HEADSCALE_SCRIPT_NAME}
+      AUTH_TYPE: ${HEADSCALE_AUTH_TYPE}
+      BASIC_AUTH_USER: ${HEADSCALE_BASIC_AUTH_USER}
+      BASIC_AUTH_PASS: ${HEADSCALE_BASIC_AUTH_PASS}
+      KEY: ${HEADSCALE_KEY}
+      TZ: ${TZ}      
+    ports:
+      - 5000:5000
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.headscale-webui.rule=Host(`headscaleui.${DOMAIN_SWARM}`)"
+        - "traefik.http.routers.headscale-webui.entrypoints=websecure"
+        - "traefik.http.routers.headscale-webui.service=headscale-webui"
+        - "traefik.http.routers.headscale-webui.middlewares=noauth-chain@file"
+        - "traefik.http.services.headscale-webui.loadbalancer.server.port=5000"  
+        - homepage.group=Base & Public
+        - homepage.name=Headscale
+        - homepage.icon=tailscale.png
+        - homepage.href=https://headscaleui.${DOMAIN_SWARM}:4
+        - homepage.description=SwarmClash科学代理服务         
+        - homepage.siteMonitor=http://headscale:8080
+        - homepage.weight=40
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.type == vm           
 
 networks:
   network_cluster:
@@ -174,3 +251,18 @@ volumes:
     driver_opts:
       <<: *common-keys-volume
       device: :${NFS_DEVICE}/public/clash/ui
+  nfs_headscale_config:
+    driver: local
+    driver_opts:
+      <<: *common-keys-volume
+      device: :${NFS_DEVICE}/public/headscale/config
+  nfs_headscale_data:
+    driver: local
+    driver_opts:
+      <<: *common-keys-volume
+      device: :${NFS_DEVICE}/public/headscale/data
+  nfs_headscale_ui:
+    driver: local
+    driver_opts:
+      <<: *common-keys-volume
+      device: :${NFS_DEVICE}/public/headscale/webui
