@@ -205,7 +205,7 @@ services:
         - homepage.group=Base & Public
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
-        - homepage.href=https://headscale-webui.${DOMAIN_SWARM}:4/admin
+        - homepage.href=https://headscaleui.${DOMAIN_SWARM}:4/admin
         - homepage.description=Tailscale VPN服务
         - homepage.ping=headscale
         - homepage.weight=31
