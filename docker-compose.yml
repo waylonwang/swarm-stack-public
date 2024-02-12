@@ -153,10 +153,10 @@ services:
     volumes:
       - nfs_headscale_config:/etc/headscale
       - nfs_headscale_data:/var/lib/headscale
-    ports:
-      - 8080:8080
-      - 9090:9090      
-      - 3478:3478/udp  
+    # ports:
+    #   - 8080:8080
+    #   - 9090:9090      
+    #   - 3478:3478/udp  
     deploy:
       labels:
         - "traefik.enable=true"
