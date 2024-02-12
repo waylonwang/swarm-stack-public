@@ -197,8 +197,8 @@ services:
       BASIC_AUTH_PASS: ${HEADSCALE_BASIC_AUTH_PASS}
       KEY: ${HEADSCALE_KEY}
       TZ: ${TZ}      
-    ports:
-      - 5000:5000
+    # ports:
+    #   - 5000:5000
     deploy:
       labels:
         - "traefik.enable=true"
