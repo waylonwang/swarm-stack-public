@@ -211,7 +211,7 @@ services:
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
         - homepage.href=https://headscaleui.${DOMAIN_SWARM}:4
-        - homepage.description=SwarmClash科学代理服务         
+        - homepage.description=Tailscale VPN服务        
         - homepage.siteMonitor=http://headscale:8080
         - homepage.weight=40
       mode: replicated
