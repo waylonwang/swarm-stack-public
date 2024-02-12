@@ -190,6 +190,8 @@ services:
       - nfs_headscale_ui:/data
     environment:
       # 直接使用Portainer容器内的环境变量
+      PUID: 0
+      PGID: 0
       HS_SERVER: ${HEADSCALE_HS_SERVER}
       DOMAIN_NAME: ${HEADSCALE_DOMAIN_NAME}
       SCRIPT_NAME: ${HEADSCALE_SCRIPT_NAME}
