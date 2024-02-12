@@ -178,7 +178,7 @@ services:
       placement:
         constraints:
           - node.role == manager
-          - node.labels.type == router 
+          - node.labels.type == vm 
 
   # Headscale WebUI 
   headscale-webui:
