@@ -63,7 +63,7 @@ services:
       labels:
       #- "traefik.enable=true"
       # Dashboard配置
-      #- "traefik.http.routers.api.rule=Host(`traefik.cloudvalley.name`)"
+      #- "traefik.http.routers.api.rule=Host(`traefik.${DOMAIN_SWARM}`)"
       #- "traefik.http.routers.api.service=api@internal" # Let the dashboard access the traefik api
       #- "traefik.http.routers.api.entrypoints=websecure" # Let the dashboard access the traefik api
       # Dashboard验证
