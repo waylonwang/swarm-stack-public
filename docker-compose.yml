@@ -79,7 +79,7 @@ services:
       #- "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
       #- "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
       #- "traefik.http.services.noop.loadbalancer.server.port=9999"
-        - homepage.group=Base & Public
+        - homepage.group=Base
         - homepage.name=Traefik
         - homepage.icon=traefik.png
         - homepage.href=https://traefik.${DOMAIN_SWARM}:4/
@@ -114,38 +114,38 @@ services:
           - node.labels.type == vm
 
   # VPN代理服务 
-  clash:
-    image: dreamacro/clash:latest
-    networks: [network_cluster]
-    restart: on-failure
-    volumes:
-      - nfs_clash_config:/root/.config/clash
-      - nfs_clash_ui:/ui
-    # ports:
-    #   - 7890:7890
-    #   - 7891:7891      
-    #   - 9090:9090  
-    deploy:
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.clash.rule=Host(`clash.${DOMAIN_SWARM}`)"
-        - "traefik.http.routers.clash.entrypoints=websecure"
-        - "traefik.http.routers.clash.service=clash"
-        - "traefik.http.routers.clash.middlewares=noauth-chain@file"
-        - "traefik.http.services.clash.loadbalancer.server.port=9090"  
-        - homepage.group=Base & Public
-        - homepage.name=SwarmClash
-        - homepage.icon=clash.png
-        - homepage.href=https://clash.${DOMAIN_SWARM}:4/ui
-        - homepage.description=SwarmClash科学代理服务         
-        - homepage.siteMonitor=http://clash:9090
-        - homepage.weight=41
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-          - node.labels.type == vm 
+  # clash:
+  #   image: dreamacro/clash:latest
+  #   networks: [network_cluster]
+  #   restart: on-failure
+  #   volumes:
+  #     - nfs_clash_config:/root/.config/clash
+  #     - nfs_clash_ui:/ui
+  #   # ports:
+  #   #   - 7890:7890
+  #   #   - 7891:7891      
+  #   #   - 9090:9090  
+  #   deploy:
+  #     labels:
+  #       - "traefik.enable=true"
+  #       - "traefik.http.routers.clash.rule=Host(`clash.${DOMAIN_SWARM}`)"
+  #       - "traefik.http.routers.clash.entrypoints=websecure"
+  #       - "traefik.http.routers.clash.service=clash"
+  #       - "traefik.http.routers.clash.middlewares=noauth-chain@file"
+  #       - "traefik.http.services.clash.loadbalancer.server.port=9090"  
+  #       - homepage.group=Base & Public
+  #       - homepage.name=SwarmClash
+  #       - homepage.icon=clash.png
+  #       - homepage.href=https://clash.${DOMAIN_SWARM}:4/ui
+  #       - homepage.description=SwarmClash科学代理服务         
+  #       - homepage.siteMonitor=http://clash:9090
+  #       - homepage.weight=41
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+  #         - node.labels.type == vm 
 
   # Tailscale VPN服务 
   headscale:
@@ -204,7 +204,7 @@ services:
         - "traefik.http.routers.headscale-webui.service=headscale-webui"
         - "traefik.http.routers.headscale-webui.middlewares=noauth-chain@file"
         - "traefik.http.services.headscale-webui.loadbalancer.server.port=5000"  
-        - homepage.group=Base & Public
+        - homepage.group=Public
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
         - homepage.href=https://hsui.${DOMAIN_SWARM}:4/admin
