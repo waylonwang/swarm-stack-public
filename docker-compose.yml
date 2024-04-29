@@ -52,6 +52,7 @@ services:
       DOMAIN_NAS: ${DOMAIN_NAS}
       DOMAIN_PVE: ${DOMAIN_PVE}
       DOMAIN_SWARM: ${DOMAIN_SWARM}
+      DOMAIN_EMERGENCY: ${DOMAIN_EMERGENCY}
       TZ: ${TZ}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
