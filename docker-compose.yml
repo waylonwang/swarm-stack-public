@@ -93,7 +93,7 @@ services:
         - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}    
   # 主页服务
   homepage:
-    image: ghcr.io/gethomepage/homepage:latest
+    image: ghcr.nju.edu.cn/gethomepage/homepage:latest
     networks: [network_cluster]
     restart: on-failure
     volumes:
