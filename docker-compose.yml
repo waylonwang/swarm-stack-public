@@ -100,7 +100,8 @@ services:
     ports:
       - 9091:9091
     volumes:
-      - nfs_authelia_config:/app/config
+      - nfs_authelia_config:/config
+      - nfs_authelia_secrets:/secrets
     healthcheck:
       disable: true
     environment:
@@ -271,6 +272,11 @@ volumes:
     driver_opts:
       <<: *common-keys-volume
       device: :${NFS_DEVICE}/public/authelia/config
+  nfs_authelia_secrets:
+    driver: local
+    driver_opts:
+      <<: *common-keys-volume
+      device: :${NFS_DEVICE}/public/authelia/secrets  
   nfs_homepage:
     driver: local
     driver_opts:
