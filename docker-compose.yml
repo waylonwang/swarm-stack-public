@@ -90,7 +90,37 @@ services:
         - homepage.widget.type=traefik
         - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:4    
         - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}  
-        - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}    
+        - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}   
+
+  # 授权服务
+  authelia:
+    image: authelia/authelia:latest
+    networks: [network_cluster]
+    restart: always
+    ports:
+      - 9091:9091
+    volumes:
+      - nfs_authelia_config:/app/config
+    healthcheck:
+      disable: true
+    environment:
+      TZ: ${TZ}        
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.auth.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)"
+        - "traefik.http.routers.auth.entrypoints=websecure"
+        - "traefik.http.routers.auth.service=auth"
+        - "traefik.http.routers.auth.middlewares=noauth-chain@file,cors-headers@file"
+        - "traefik.http.services.auth.loadbalancer.server.port=9091"
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.type == vm
+          - node.labels.public == true
+
   # 主页服务
   homepage:
     image: ghcr.nju.edu.cn/gethomepage/homepage:latest
@@ -113,6 +143,7 @@ services:
         constraints:
           - node.role == manager
           - node.labels.type == vm
+          - node.labels.public == true
 
   # VPN代理服务 
   # clash:
@@ -176,6 +207,7 @@ services:
         constraints:
           - node.role == manager
           - node.labels.type == vm 
+          - node.labels.public == true
 
   # Headscale WebUI 
   headscale-webui:
@@ -234,6 +266,11 @@ volumes:
     driver_opts:
       <<: *common-keys-volume
       device: :${NFS_DEVICE}/public/traefik
+  nfs_authelia_config:
+    driver: local
+    driver_opts:
+      <<: *common-keys-volume
+      device: :${NFS_DEVICE}/public/authelia/config
   nfs_homepage:
     driver: local
     driver_opts:
