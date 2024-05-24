@@ -128,13 +128,13 @@ services:
         # - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
 
         - 'traefik.enable=true'
-        - 'traefik.http.routers.authelia-http.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
-        - 'traefik.http.routers.authelia-http.entryPoints=web'
-        - 'traefik.http.routers.authelia-http.middlewares=https-redirectscheme@file'
-        - 'traefik.http.routers.authelia-http.service=authelia'
+        # - 'traefik.http.routers.authelia-http.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
+        # - 'traefik.http.routers.authelia-http.entryPoints=web'
+        # - 'traefik.http.routers.authelia-http.middlewares=https-redirectscheme@file'
+        # - 'traefik.http.routers.authelia-http.service=authelia'
         - 'traefik.http.routers.authelia-https.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
         - 'traefik.http.routers.authelia-https.entryPoints=websecure'
-        - 'traefik.http.routers.authelia-https.middlewares=default-headers@file'
+        - 'traefik.http.routers.authelia-https.middlewares=noauth-chain@file'
         # - 'traefik.http.routers.authelia-https.tls={}'
         - 'traefik.http.routers.authelia-https.service=authelia'
         # - 'traefik.http.routers.authelia-public.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
