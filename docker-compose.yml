@@ -133,7 +133,7 @@ services:
         - 'traefik.http.routers.authelia-http.middlewares=https-redirectscheme@file'
         - 'traefik.http.routers.authelia-https.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
         - 'traefik.http.routers.authelia-https.entryPoints=websecure'
-        - 'traefik.http.routers.authelia-https.middlewares=default-headersn@file,authelian@file'
+        - 'traefik.http.routers.authelia-https.middlewares=default-headersn@file,authelian'
         - "traefik.http.services.authelia.loadbalancer.server.port=9091"
         - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.cloudvalley.site:666%2F'
         - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
