@@ -132,7 +132,7 @@ services:
         - 'traefik.http.routers.authelia-http.entryPoints=web'
         - 'traefik.http.routers.authelia-http.middlewares=https-redirectscheme@file'
         - 'traefik.http.routers.authelia-https.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
-        - 'traefik.http.routers.authelia-https.entryPoints=websecure'
+        - 'traefik.http.routers.authelia-https.entryPoints=websecure,public'
         - 'traefik.http.routers.authelia-https.middlewares=default-headers@file,authelia'
         - 'traefik.http.routers.authelia.service=authelia'
         - "traefik.http.services.authelia.loadbalancer.server.port=9091"
