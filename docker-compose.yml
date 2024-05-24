@@ -114,8 +114,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.auth.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)"
-        # - "traefik.http.routers.auth.entrypoints=websecure"
-        - "traefik.http.routers.auth.entrypoints.forward-auth.implementation=ForwardAuth"
+        - "traefik.http.routers.auth.entrypoints=websecure"
         - "traefik.http.routers.auth.service=auth"
         - "traefik.http.routers.auth.middlewares=noauth-chain@file,cors-headers@file"
         - "traefik.http.services.auth.loadbalancer.server.port=9091"
