@@ -99,8 +99,7 @@ services:
 
   # 授权服务
   authelia:
-    # image: authelia/authelia:latest
-    image: authelia/authelia:4.21.0
+    image: authelia/authelia:latest
     networks: [network_cluster]
     restart: always
     ports:
