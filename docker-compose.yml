@@ -138,7 +138,7 @@ services:
         - 'traefik.http.routers.authelia-https.tls={}'
         - 'traefik.http.routers.authelia-https.service=authelia'
         - 'traefik.http.routers.authelia-public.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
-        - 'traefik.http.routers.authelia-publicentryPoints=websecure'
+        - 'traefik.http.routers.authelia-public.entryPoints=websecure'
         - 'traefik.http.routers.authelia-public.middlewares=default-headers@file,authelia'
         - 'traefik.http.routers.authelia-public.tls={}'
         - 'traefik.http.routers.authelia-public.service=authelia'
