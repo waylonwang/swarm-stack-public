@@ -26,6 +26,7 @@ services:
       #- "8443:443" # HTTPS
       #- "8080:8080"  # DashBoard
       #- "8022:8022"  # SSH
+      #- "8022:8022"  # Authelia
       - target: 80
         published: 8000
         protocol: tcp
@@ -41,7 +42,11 @@ services:
       - target: 8090
         published: 8090
         protocol: tcp
-        mode: host      
+        mode: host   
+      - target: 666
+        published: 666
+        protocol: tcp
+        mode: host              
     environment:
       # 直接使用Portainer容器内的环境变量
       ALICLOUD_ACCESS_KEY: ${ALICLOUD_ACCESS_KEY}
@@ -107,7 +112,7 @@ services:
     environment:
       TZ: ${TZ}        
     deploy:
-      labels:
+      # labels:
         # - "traefik.enable=true"
         # - "traefik.http.routers.auth.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)"
         # - "traefik.http.routers.auth.entrypoints=websecure"
@@ -122,16 +127,16 @@ services:
         # - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'        
         # - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
 
-        - 'traefik.enable=true'
-        - 'traefik.http.routers.authelia.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
-        - 'traefik.http.routers.authelia.entryPoints=websecure'
-        - 'traefik.http.routers.authelia.tls=true'
-        - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth'
-        ## The following commented line is for configuring the Authelia URL in the proxy. We strongly suggest this is
-        ## configured in the Session Cookies section of the Authelia configuration.
-        # - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.example.com%2F'
-        - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
-        - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
+        # - 'traefik.enable=true'
+        # - 'traefik.http.routers.authelia.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
+        # - 'traefik.http.routers.authelia.entryPoints=websecure'
+        # - 'traefik.http.routers.authelia.tls=true'
+        # - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth'
+        # ## The following commented line is for configuring the Authelia URL in the proxy. We strongly suggest this is
+        # ## configured in the Session Cookies section of the Authelia configuration.
+        # # - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.example.com%2F'
+        # - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
+        # - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
 
       mode: replicated
       replicas: 1
