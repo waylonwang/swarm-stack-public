@@ -119,7 +119,7 @@ services:
         - 'traefik.http.routers.authelia.tls.options=default'
         - 'traefik.http.routers.authelia.service=authelia'
         - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-        - 'traefik.http.middlewares.auth.forwardAuth.address=`https://auth.${DOMAIN_SWARM}/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}%2F`
+        - 'traefik.http.middlewares.auth.forwardAuth.address=`https://auth.${DOMAIN_SWARM}/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}%2F`'
         - 'traefik.http.middlewares.auth.forwardAuth.trustForwardHeader=true'
         - 'traefik.http.middlewares.auth.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
         # - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
