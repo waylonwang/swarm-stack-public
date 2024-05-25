@@ -106,7 +106,6 @@ services:
       - 9091 
     volumes:
       - nfs_authelia_config:/config
-      - nfs_authelia_secrets:/secrets
     healthcheck:
       disable: true
     environment:
@@ -132,21 +131,23 @@ services:
         # - 'traefik.http.routers.authelia-http.entryPoints=web'
         # - 'traefik.http.routers.authelia-http.middlewares=https-redirectscheme@file'
         # - 'traefik.http.routers.authelia-http.service=authelia'
-        - 'traefik.http.routers.authelia-https.rule=Host(`authelia.${DOMAIN_SWARM}`,`authelia.${DOMAIN_EMERGENCY}`)'
-        - 'traefik.http.routers.authelia-https.entryPoints=websecure'
-        - 'traefik.http.routers.authelia-https.middlewares=noauth-chain@file'
+        - 'traefik.http.routers.authelia.rule=Host(`authelia.${DOMAIN_SWARM}`,`authelia.${DOMAIN_EMERGENCY}`)'
+        - 'traefik.http.routers.authelia.entryPoints=websecure'
+        - 'traefik.http.routers.authelia.middlewares=noauth-chain@file'
+        - 'traefik.http.routers.authelia.tls.options=default'
         # - 'traefik.http.routers.authelia-https.tls={}'
-        # - 'traefik.http.routers.authelia-https.service=authelia'
+        - 'traefik.http.routers.authelia.service=authelia'
         # - 'traefik.http.routers.authelia-public.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
         # - 'traefik.http.routers.authelia-public.entryPoints=public'
         # - 'traefik.http.routers.authelia-public.middlewares=authelia'
         # - 'traefik.http.routers.authelia-public.tls={}'
         # - 'traefik.http.routers.authelia-public.service=authelia'
-        # - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-        - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauthelia.cloudvalley.site:4%2F'
+        - "traefik.http.services.authelia.loadbalancer.server.port=9091"
+        - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth'
+        # - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauthelia.cloudvalley.site:4%2F'
         - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
         - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
-        - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
+        # - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
 
       mode: replicated
       replicas: 1
@@ -306,11 +307,6 @@ volumes:
     driver_opts:
       <<: *common-keys-volume
       device: :${NFS_DEVICE}/public/authelia/config
-  nfs_authelia_secrets:
-    driver: local
-    driver_opts:
-      <<: *common-keys-volume
-      device: :${NFS_DEVICE}/public/authelia/secrets  
   nfs_homepage:
     driver: local
     driver_opts:
