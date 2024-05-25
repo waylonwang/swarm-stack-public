@@ -102,6 +102,8 @@ services:
     image: authelia/authelia:latest
     networks: [network_cluster]
     restart: always
+    expose:
+      - 9091
     volumes:
       - nfs_authelia_config:/config
     healthcheck:
