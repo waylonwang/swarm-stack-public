@@ -102,6 +102,8 @@ services:
     image: authelia/authelia:latest
     networks: [network_cluster]
     restart: always
+    expose:
+      - 9091
     ports:
       - target: 9091
         published: 9091
