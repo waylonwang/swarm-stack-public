@@ -102,8 +102,6 @@ services:
     image: authelia/authelia:latest
     networks: [network_cluster]
     restart: always
-    expose:
-      - 9091 
     volumes:
       - nfs_authelia_config:/config
     healthcheck:
@@ -133,9 +131,8 @@ services:
         # - 'traefik.http.routers.authelia-http.service=authelia'
         - 'traefik.http.routers.authelia.rule=Host(`authelia.${DOMAIN_SWARM}`,`authelia.${DOMAIN_EMERGENCY}`)'
         - 'traefik.http.routers.authelia.entryPoints=websecure'
-        - 'traefik.http.routers.authelia.middlewares=noauth-chain@file'
+        - 'traefik.http.routers.authelia.middlewares=noauth-chain@file,cors-headers@file'
         - 'traefik.http.routers.authelia.tls.options=default'
-        # - 'traefik.http.routers.authelia-https.tls={}'
         - 'traefik.http.routers.authelia.service=authelia'
         # - 'traefik.http.routers.authelia-public.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
         # - 'traefik.http.routers.authelia-public.entryPoints=public'
@@ -143,7 +140,7 @@ services:
         # - 'traefik.http.routers.authelia-public.tls={}'
         # - 'traefik.http.routers.authelia-public.service=authelia'
         - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-        - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth'
+        - 'traefik.http.middlewares.authelia.forwardAuth.address=https://authelia:cloudvalley.site:4/api/authz/forward-auth'
         # - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauthelia.cloudvalley.site:4%2F'
         - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
         - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
