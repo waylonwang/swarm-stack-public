@@ -103,7 +103,10 @@ services:
     networks: [network_cluster]
     restart: always
     ports:
-      - 9091:9091
+      - target: 9091
+        published: 9091
+        protocol: tcp
+        mode: host   
     volumes:
       - nfs_authelia_config:/config
       - nfs_authelia_secrets:/secrets
