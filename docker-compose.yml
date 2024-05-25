@@ -119,7 +119,7 @@ services:
         - 'traefik.http.routers.authelia.tls.options=default'
         - 'traefik.http.routers.authelia.service=authelia'
         - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-        - 'traefik.http.middlewares.authelia.forwardAuth.address=https://auth.cloudvalley.site:4/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.cloudvalley.site:4%2F'
+        - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.cloudvalley.site:4%2F'
         - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
         - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
         - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
