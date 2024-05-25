@@ -115,7 +115,7 @@ services:
         - 'traefik.enable=true'
         - 'traefik.http.routers.authelia.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
         - 'traefik.http.routers.authelia.entryPoints=websecure'
-        - 'traefik.http.routers.authelia.middlewares=noauth-chain@file'
+        - 'traefik.http.routers.authelia.middlewares=noauth-chain@file,authelia-headers@file'
         - 'traefik.http.routers.authelia.tls.options=default'
         - 'traefik.http.routers.authelia.service=authelia'
         - "traefik.http.services.authelia.loadbalancer.server.port=9091"
