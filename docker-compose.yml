@@ -2,6 +2,40 @@
 version: "3.4"
 
 services:
+  # 授权服务
+  authelia:
+    image: authelia/authelia:latest
+    networks: [network_cluster]
+    restart: always
+    # expose:
+    #   - 9091
+    volumes:
+      - nfs_authelia_config:/config
+    healthcheck:
+      disable: true
+    environment:
+      TZ: ${TZ}        
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.http.routers.authelia.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
+        - 'traefik.http.routers.authelia.entryPoints=websecure'
+        - 'traefik.http.routers.authelia.middlewares=noauth-chain@file'
+        - 'traefik.http.routers.authelia.tls.options=default'
+        - 'traefik.http.routers.authelia.service=authelia'
+        - "traefik.http.services.authelia.loadbalancer.server.port=9091"
+        - 'traefik.http.middlewares.auth.forwardAuth.address=https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}:${EXTERNAL_PORT}%2F'
+        - 'traefik.http.middlewares.auth.forwardAuth.trustForwardHeader=true'
+        - 'traefik.http.middlewares.auth.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
+        # - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.type == vm
+          - node.labels.public == true
+
   # Traefik反代服务器
   traefik:
     # 网络差时更新版本耗时较长，影响服务访问，因此固定到v2.10.4，需要时再手动升级
@@ -97,40 +131,6 @@ services:
         - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}  
         - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}   
 
-  # 授权服务
-  authelia:
-    image: authelia/authelia:latest
-    networks: [network_cluster]
-    restart: always
-    # expose:
-    #   - 9091
-    volumes:
-      - nfs_authelia_config:/config
-    healthcheck:
-      disable: true
-    environment:
-      TZ: ${TZ}        
-    deploy:
-      labels:
-        - 'traefik.enable=true'
-        - 'traefik.http.routers.authelia.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
-        - 'traefik.http.routers.authelia.entryPoints=websecure'
-        - 'traefik.http.routers.authelia.middlewares=noauth-chain@file'
-        - 'traefik.http.routers.authelia.tls.options=default'
-        - 'traefik.http.routers.authelia.service=authelia'
-        - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-        - 'traefik.http.middlewares.auth.forwardAuth.address=`https://auth.${DOMAIN_SWARM}/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}%2F`'
-        - 'traefik.http.middlewares.auth.forwardAuth.trustForwardHeader=true'
-        - 'traefik.http.middlewares.auth.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
-        # - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
-
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-          - node.labels.type == vm
-          - node.labels.public == true
 
   # 主页服务
   homepage:
