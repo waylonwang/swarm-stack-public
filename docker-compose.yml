@@ -40,7 +40,7 @@ services:
 
   # Authentik认证服务
   authentik-server:
-    image: ghcr.io/goauthentik/server:2024.4.2
+    image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
     command: server
     networks: [network_cluster]
     restart: unless-stopped
@@ -73,7 +73,7 @@ services:
           - node.labels.public == true      
 
   authentik-worker:
-    image: ghcr.io/goauthentik/server:2024.4.2
+    image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
     command: worker
     networks: [network_cluster]
     restart: unless-stopped    
