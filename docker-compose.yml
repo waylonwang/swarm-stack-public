@@ -70,7 +70,7 @@ services:
         constraints:
           - node.role == manager
           - node.labels.type == vm
-          - node.labels.public == true"      
+          - node.labels.public == true      
 
   authentik-worker:
     image: ghcr.io/goauthentik/server:2024.4.2
