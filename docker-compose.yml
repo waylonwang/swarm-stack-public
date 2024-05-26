@@ -24,9 +24,11 @@ services:
         - 'traefik.http.routers.authelia.tls.options=default'
         - 'traefik.http.routers.authelia.service=authelia'
         - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-        - 'traefik.http.middlewares.auth.forwardAuth.address=https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}:${EXTERNAL_PORT}%2F'
+        - 'traefik.http.middlewares.auth.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}:${EXTERNAL_PORT}%2F'
+        # - 'traefik.http.middlewares.auth.forwardAuth.address=https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}:${EXTERNAL_PORT}%2F'
         - 'traefik.http.middlewares.auth.forwardAuth.trustForwardHeader=true'
         - 'traefik.http.middlewares.auth.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
+        - "traefik.http.middlewares.auth.forwardauth.authRequestHeaders=X-Forwarded-Proto: 'https'"
         # - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
       mode: replicated
       replicas: 1
@@ -122,12 +124,12 @@ services:
         - homepage.group=Base
         - homepage.name=Traefik
         - homepage.icon=traefik.png
-        - homepage.href=https://traefik.${DOMAIN_SWARM}:4/
+        - homepage.href=https://traefik.${DOMAIN_SWARM}:${EXTERNAL_PORT}/
         - homepage.description=域名反向代理服务
         - homepage.ping=traefik 
         - homepage.weight=10
         - homepage.widget.type=traefik
-        - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:4    
+        - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:${EXTERNAL_PORT}    
         - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}  
         - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}   
 
@@ -179,7 +181,7 @@ services:
   #       - homepage.group=Base & Public
   #       - homepage.name=SwarmClash
   #       - homepage.icon=clash.png
-  #       - homepage.href=https://clash.${DOMAIN_SWARM}:4/ui
+  #       - homepage.href=https://clash.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ui
   #       - homepage.description=SwarmClash科学代理服务         
   #       - homepage.siteMonitor=http://clash:9090
   #       - homepage.weight=41
@@ -229,8 +231,8 @@ services:
       - nfs_headscale_config:/etc/headscale:ro
       - nfs_headscale_ui:/data
     environment:
-      HS_SERVER: https://headscale.${DOMAIN_SWARM}:4
-      DOMAIN_NAME: https://headscale.${DOMAIN_SWARM}:4
+      HS_SERVER: https://headscale.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+      DOMAIN_NAME: https://headscale.${DOMAIN_SWARM}:${EXTERNAL_PORT}
       AUTH_TYPE: Basic
       # 直接使用Portainer容器内的环境变量
       PUID: ${DOCKER_PUID}
@@ -251,7 +253,7 @@ services:
         - homepage.group=Public
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
-        - homepage.href=https://hsui.${DOMAIN_SWARM}:4/admin
+        - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}/admin
         - homepage.description=Tailscale VPN服务
         - homepage.ping=headscale
         - homepage.weight=31
