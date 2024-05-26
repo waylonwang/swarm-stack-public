@@ -28,7 +28,7 @@ services:
         # - 'traefik.http.middlewares.auth.forwardAuth.address=https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}:${EXTERNAL_PORT}%2F'
         - 'traefik.http.middlewares.auth.forwardAuth.trustForwardHeader=true'
         - 'traefik.http.middlewares.auth.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
-        - "traefik.http.middlewares.auth.forwardauth.authRequestHeaders=X-Forwarded-Proto: 'https'"
+        - "traefik.http.middlewares.auth.forwardauth.authRequestHeaders.X-Forwarded-Proto=https"
         # - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
       mode: replicated
       replicas: 1
