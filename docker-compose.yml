@@ -11,6 +11,7 @@ services:
     #   - 9091
     volumes:
       - nfs_authelia_config:/config
+      - nfs_authelia_keys:/keys
     healthcheck:
       disable: true
     environment:
@@ -344,6 +345,11 @@ volumes:
     driver_opts:
       <<: *common-keys-volume
       device: :${NFS_DEVICE}/public/authelia/config
+  nfs_authelia_keys:
+    driver: local
+    driver_opts:
+      <<: *common-keys-volume
+      device: :${NFS_DEVICE}/public/authelia/keys      
   nfs_authentik_media:
     driver: local
     driver_opts:
