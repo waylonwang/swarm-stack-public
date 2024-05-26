@@ -36,7 +36,7 @@ services:
         constraints:
           - node.role == manager
           - node.labels.type == vm
-          - node.labels.public == true"
+          - node.labels.public == true
 
   # Authentik认证服务
   authentik-server:
@@ -96,7 +96,7 @@ services:
         constraints:
           - node.role == manager
           - node.labels.type == vm
-          - node.labels.public == true"   
+          - node.labels.public == true   
 
   # Traefik反代服务
   traefik:
