@@ -215,7 +215,7 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.headscale-webui.rule=Host(`hsui.${DOMAIN_SWARM}`,`hsui.${DOMAIN_EMERGENCY}`)"
+        - "traefik.http.routers.headscale-webui.rule=Host(`hsui.${DOMAIN_SWARM}`,`hsui.${DOMAIN_EMERGENCY}`) && (PathPrefix(`/${HEADSCALE_SCRIPT_NAME}/`) || PathPrefix(`/${HEADSCALE_SCRIPT_NAME}`))"
         - "traefik.http.routers.headscale-webui.entrypoints=websecure"
         - "traefik.http.routers.headscale-webui.service=headscale-webui"
         - "traefik.http.routers.headscale-webui.middlewares=normal-chain@file"
