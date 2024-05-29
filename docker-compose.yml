@@ -200,6 +200,7 @@ services:
     environment:
       HS_SERVER: https://headscale.${DOMAIN_SWARM}:${EXTERNAL_PORT}
       DOMAIN_NAME: https://headscale.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+      LOG_LEVEL: 'Debug'
       AUTH_TYPE: oidc # Basic: basic auth模式
       # AUTH_TYPE: basic # oidc: oidc auth模式
       PUID: ${DOCKER_PUID}
