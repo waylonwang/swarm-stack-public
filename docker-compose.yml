@@ -148,8 +148,8 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.homepage.rule=Host(`home.${DOMAIN_SWARM}`,`home.${DOMAIN_EMERGENCY}`)"
         - "traefik.http.routers.homepage.entrypoints=websecure"
-        - "traefik.http.routers.homepage.service=auth,homepage"
-        - "traefik.http.routers.homepage.middlewares=normal-chain@file,cors-headers@file"
+        - "traefik.http.routers.homepage.service=homepage"
+        - "traefik.http.routers.homepage.middlewares=auth,normal-chain@file,cors-headers@file"
         - "traefik.http.services.homepage.loadbalancer.server.port=3000"
       mode: replicated
       replicas: 1
@@ -230,7 +230,7 @@ services:
         constraints:
           - node.role == manager
           - node.labels.type == vm
-          
+
   # VPN代理服务 
   # clash:
   #   image: dreamacro/clash:latest
