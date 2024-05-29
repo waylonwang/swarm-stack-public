@@ -215,7 +215,7 @@ services:
         - "traefik.http.routers.headscale-webui.rule=Host(`hsui.${DOMAIN_SWARM}`,`hsui.${DOMAIN_EMERGENCY}`)"
         - "traefik.http.routers.headscale-webui.entrypoints=websecure"
         - "traefik.http.routers.headscale-webui.service=headscale-webui"
-        - "traefik.http.routers.headscale-webui.middlewares=auth,normal-chain@file"
+        - "traefik.http.routers.headscale-webui.middlewares=normal-chain@file"
         - "traefik.http.services.headscale-webui.loadbalancer.server.port=5000"  
         - homepage.group=Public
         - homepage.name=Headscale
