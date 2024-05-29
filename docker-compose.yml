@@ -39,66 +39,6 @@ services:
           - node.labels.type == vm
           - node.labels.public == true
 
-  # # Authentik认证服务
-  # authentik-server:
-  #   image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
-  #   command: server
-  #   networks: [network_cluster]
-  #   restart: unless-stopped
-  #   environment:
-  #     AUTHENTIK_REDIS__HOST: redis
-  #     AUTHENTIK_POSTGRESQL__HOST: postgres
-  #     AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
-  #     AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
-  #     AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
-  #     AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
-  #     TZ: ${TZ}        
-  #   volumes:
-  #     - nfs_authentik_media:/media
-  #     - nfs_authentik_templates:/templates
-  #   deploy:
-  #     labels:
-  #       - 'traefik.enable=true'
-  #       - 'traefik.http.routers.authentik-server.rule=Host(`authentik.${DOMAIN_SWARM}`,`authentik.${DOMAIN_EMERGENCY}`)'
-  #       - 'traefik.http.routers.authentik-server.entryPoints=websecure'
-  #       - 'traefik.http.routers.authentik-server.middlewares=normal-chain@file'
-  #       - 'traefik.http.routers.authentik-server.tls.options=default'
-  #       - 'traefik.http.routers.authentik-server.service=authentik-server'
-  #       - 'traefik.http.services.authentik-server.loadbalancer.server.port=9000'
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
-  #         - node.labels.type == vm
-  #         - node.labels.public == true      
-
-  # authentik-worker:
-  #   image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
-  #   command: worker
-  #   networks: [network_cluster]
-  #   restart: unless-stopped    
-  #   environment:
-  #     AUTHENTIK_REDIS__HOST: redis
-  #     AUTHENTIK_POSTGRESQL__HOST: postgres
-  #     AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
-  #     AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
-  #     AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
-  #     AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
-  #     TZ: ${TZ}           
-  #   volumes:  
-  #     - nfs_authentik_media:/media
-  #     - nfs_authentik_certs:/certs
-  #     - nfs_authentik_templates:/templates
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
-  #         - node.labels.type == vm
-  #         - node.labels.public == true   
-
   # Traefik反代服务
   traefik:
     # 网络差时更新版本耗时较长，影响服务访问，因此固定到v2.10.4，需要时再手动升级
@@ -219,40 +159,6 @@ services:
           - node.labels.type == vm
           - node.labels.public == true
 
-  # VPN代理服务 
-  # clash:
-  #   image: dreamacro/clash:latest
-  #   networks: [network_cluster]
-  #   restart: on-failure
-  #   volumes:
-  #     - nfs_clash_config:/root/.config/clash
-  #     - nfs_clash_ui:/ui
-  #   # ports:
-  #   #   - 7890:7890
-  #   #   - 7891:7891      
-  #   #   - 9090:9090  
-  #   deploy:
-  #     labels:
-  #       - "traefik.enable=true"
-  #       - "traefik.http.routers.clash.rule=Host(`clash.${DOMAIN_SWARM}`)"
-  #       - "traefik.http.routers.clash.entrypoints=websecure"
-  #       - "traefik.http.routers.clash.service=clash"
-  #       - "traefik.http.routers.clash.middlewares=normal-chain@file"
-  #       - "traefik.http.services.clash.loadbalancer.server.port=9090"  
-  #       - homepage.group=Base & Public
-  #       - homepage.name=SwarmClash
-  #       - homepage.icon=clash.png
-  #       - homepage.href=https://clash.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ui
-  #       - homepage.description=SwarmClash科学代理服务         
-  #       - homepage.siteMonitor=http://clash:9090
-  #       - homepage.weight=41
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
-  #         - node.labels.type == vm 
-
   # Tailscale VPN服务 
   headscale:
     image: headscale/headscale:0.22.3
@@ -324,6 +230,100 @@ services:
         constraints:
           - node.role == manager
           - node.labels.type == vm
+          
+  # VPN代理服务 
+  # clash:
+  #   image: dreamacro/clash:latest
+  #   networks: [network_cluster]
+  #   restart: on-failure
+  #   volumes:
+  #     - nfs_clash_config:/root/.config/clash
+  #     - nfs_clash_ui:/ui
+  #   # ports:
+  #   #   - 7890:7890
+  #   #   - 7891:7891      
+  #   #   - 9090:9090  
+  #   deploy:
+  #     labels:
+  #       - "traefik.enable=true"
+  #       - "traefik.http.routers.clash.rule=Host(`clash.${DOMAIN_SWARM}`)"
+  #       - "traefik.http.routers.clash.entrypoints=websecure"
+  #       - "traefik.http.routers.clash.service=clash"
+  #       - "traefik.http.routers.clash.middlewares=normal-chain@file"
+  #       - "traefik.http.services.clash.loadbalancer.server.port=9090"  
+  #       - homepage.group=Base & Public
+  #       - homepage.name=SwarmClash
+  #       - homepage.icon=clash.png
+  #       - homepage.href=https://clash.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ui
+  #       - homepage.description=SwarmClash科学代理服务         
+  #       - homepage.siteMonitor=http://clash:9090
+  #       - homepage.weight=41
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+  #         - node.labels.type == vm 
+
+  # # Authentik认证服务
+  # authentik-server:
+  #   image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
+  #   command: server
+  #   networks: [network_cluster]
+  #   restart: unless-stopped
+  #   environment:
+  #     AUTHENTIK_REDIS__HOST: redis
+  #     AUTHENTIK_POSTGRESQL__HOST: postgres
+  #     AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
+  #     AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
+  #     AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+  #     AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+  #     TZ: ${TZ}        
+  #   volumes:
+  #     - nfs_authentik_media:/media
+  #     - nfs_authentik_templates:/templates
+  #   deploy:
+  #     labels:
+  #       - 'traefik.enable=true'
+  #       - 'traefik.http.routers.authentik-server.rule=Host(`authentik.${DOMAIN_SWARM}`,`authentik.${DOMAIN_EMERGENCY}`)'
+  #       - 'traefik.http.routers.authentik-server.entryPoints=websecure'
+  #       - 'traefik.http.routers.authentik-server.middlewares=normal-chain@file'
+  #       - 'traefik.http.routers.authentik-server.tls.options=default'
+  #       - 'traefik.http.routers.authentik-server.service=authentik-server'
+  #       - 'traefik.http.services.authentik-server.loadbalancer.server.port=9000'
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+  #         - node.labels.type == vm
+  #         - node.labels.public == true      
+
+  # authentik-worker:
+  #   image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
+  #   command: worker
+  #   networks: [network_cluster]
+  #   restart: unless-stopped    
+  #   environment:
+  #     AUTHENTIK_REDIS__HOST: redis
+  #     AUTHENTIK_POSTGRESQL__HOST: postgres
+  #     AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
+  #     AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
+  #     AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+  #     AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+  #     TZ: ${TZ}           
+  #   volumes:  
+  #     - nfs_authentik_media:/media
+  #     - nfs_authentik_certs:/certs
+  #     - nfs_authentik_templates:/templates
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+  #         - node.labels.type == vm
+  #         - node.labels.public == true   
 
 networks:
   network_cluster:
