@@ -4,7 +4,7 @@ version: "3.4"
 services:
   # Authelia认证服务
   authelia:
-    image: authelia/authelia:latest
+    image: authelia/authelia:4.38.8
     networks: [network_cluster]
     restart: always
     # expose:
@@ -39,65 +39,65 @@ services:
           - node.labels.type == vm
           - node.labels.public == true
 
-  # Authentik认证服务
-  authentik-server:
-    image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
-    command: server
-    networks: [network_cluster]
-    restart: unless-stopped
-    environment:
-      AUTHENTIK_REDIS__HOST: redis
-      AUTHENTIK_POSTGRESQL__HOST: postgres
-      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
-      AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
-      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
-      TZ: ${TZ}        
-    volumes:
-      - nfs_authentik_media:/media
-      - nfs_authentik_templates:/templates
-    deploy:
-      labels:
-        - 'traefik.enable=true'
-        - 'traefik.http.routers.authentik-server.rule=Host(`authentik.${DOMAIN_SWARM}`,`authentik.${DOMAIN_EMERGENCY}`)'
-        - 'traefik.http.routers.authentik-server.entryPoints=websecure'
-        - 'traefik.http.routers.authentik-server.middlewares=normal-chain@file'
-        - 'traefik.http.routers.authentik-server.tls.options=default'
-        - 'traefik.http.routers.authentik-server.service=authentik-server'
-        - 'traefik.http.services.authentik-server.loadbalancer.server.port=9000'
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-          - node.labels.type == vm
-          - node.labels.public == true      
+  # # Authentik认证服务
+  # authentik-server:
+  #   image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
+  #   command: server
+  #   networks: [network_cluster]
+  #   restart: unless-stopped
+  #   environment:
+  #     AUTHENTIK_REDIS__HOST: redis
+  #     AUTHENTIK_POSTGRESQL__HOST: postgres
+  #     AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
+  #     AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
+  #     AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+  #     AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+  #     TZ: ${TZ}        
+  #   volumes:
+  #     - nfs_authentik_media:/media
+  #     - nfs_authentik_templates:/templates
+  #   deploy:
+  #     labels:
+  #       - 'traefik.enable=true'
+  #       - 'traefik.http.routers.authentik-server.rule=Host(`authentik.${DOMAIN_SWARM}`,`authentik.${DOMAIN_EMERGENCY}`)'
+  #       - 'traefik.http.routers.authentik-server.entryPoints=websecure'
+  #       - 'traefik.http.routers.authentik-server.middlewares=normal-chain@file'
+  #       - 'traefik.http.routers.authentik-server.tls.options=default'
+  #       - 'traefik.http.routers.authentik-server.service=authentik-server'
+  #       - 'traefik.http.services.authentik-server.loadbalancer.server.port=9000'
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+  #         - node.labels.type == vm
+  #         - node.labels.public == true      
 
-  authentik-worker:
-    image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
-    command: worker
-    networks: [network_cluster]
-    restart: unless-stopped    
-    environment:
-      AUTHENTIK_REDIS__HOST: redis
-      AUTHENTIK_POSTGRESQL__HOST: postgres
-      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
-      AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
-      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
-      TZ: ${TZ}           
-    volumes:  
-      - nfs_authentik_media:/media
-      - nfs_authentik_certs:/certs
-      - nfs_authentik_templates:/templates
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-          - node.labels.type == vm
-          - node.labels.public == true   
+  # authentik-worker:
+  #   image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
+  #   command: worker
+  #   networks: [network_cluster]
+  #   restart: unless-stopped    
+  #   environment:
+  #     AUTHENTIK_REDIS__HOST: redis
+  #     AUTHENTIK_POSTGRESQL__HOST: postgres
+  #     AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
+  #     AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
+  #     AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+  #     AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+  #     TZ: ${TZ}           
+  #   volumes:  
+  #     - nfs_authentik_media:/media
+  #     - nfs_authentik_certs:/certs
+  #     - nfs_authentik_templates:/templates
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+  #         - node.labels.type == vm
+  #         - node.labels.public == true   
 
   # Traefik反代服务
   traefik:
@@ -208,7 +208,7 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.homepage.rule=Host(`home.${DOMAIN_SWARM}`,`home.${DOMAIN_EMERGENCY}`)"
         - "traefik.http.routers.homepage.entrypoints=websecure"
-        - "traefik.http.routers.homepage.service=homepage"
+        - "traefik.http.routers.homepage.service=auth,homepage"
         - "traefik.http.routers.homepage.middlewares=normal-chain@file,cors-headers@file"
         - "traefik.http.services.homepage.loadbalancer.server.port=3000"
       mode: replicated
@@ -309,7 +309,7 @@ services:
         - "traefik.http.routers.headscale-webui.rule=Host(`hsui.${DOMAIN_SWARM}`,`hsui.${DOMAIN_EMERGENCY}`)"
         - "traefik.http.routers.headscale-webui.entrypoints=websecure"
         - "traefik.http.routers.headscale-webui.service=headscale-webui"
-        - "traefik.http.routers.headscale-webui.middlewares=normal-chain@file"
+        - "traefik.http.routers.headscale-webui.middlewares=auth,normal-chain@file"
         - "traefik.http.services.headscale-webui.loadbalancer.server.port=5000"  
         - homepage.group=Public
         - homepage.name=Headscale
