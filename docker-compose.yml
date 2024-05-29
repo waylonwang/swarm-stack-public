@@ -223,7 +223,7 @@ services:
         - homepage.group=Public
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
-        - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}/admin
+        - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
         - homepage.description=Tailscale VPN服务
         - homepage.ping=headscale
         - homepage.weight=31
