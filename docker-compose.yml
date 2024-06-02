@@ -38,6 +38,11 @@ services:
           - node.role == manager
           - node.labels.type == vm
           - node.labels.public == true
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.authelia
+        fluentd-async-connect: "true"  
 
   # Traefik反代服务
   traefik:
@@ -133,7 +138,11 @@ services:
         - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:${EXTERNAL_PORT}    
         - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}  
         - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}   
-
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.traefik
+        fluentd-async-connect: "true"  
 
   # 主页服务
   homepage:
@@ -188,6 +197,11 @@ services:
           - node.role == manager
           - node.labels.type == vm 
           - node.labels.public == true
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.headscale
+        fluentd-async-connect: "true"  
 
   # Headscale WebUI 
   headscale-webui:
