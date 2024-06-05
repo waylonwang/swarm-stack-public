@@ -108,9 +108,9 @@ services:
       placement:
         constraints:
           - node.role == manager
-          # - node.labels.type == router
-          - node.labels.type == vm
-          - node.labels.public == true
+          - node.labels.type == router
+          # - node.labels.type == vm
+          # - node.labels.public == true
       #以下Labels方式的动态配置，全部改为File的动态配置在/etc/traefik/dynamic/*.yml中配置
       labels:
       #- "traefik.enable=true"
@@ -169,6 +169,11 @@ services:
           - node.role == manager
           - node.labels.type == vm
           - node.labels.public == true
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.homepage
+        fluentd-async-connect: "true"  
 
   # Tailscale VPN服务 
   headscale:
@@ -250,6 +255,11 @@ services:
         constraints:
           - node.role == manager
           - node.labels.type == vm
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.headscale-webui
+        fluentd-async-connect: "true"  
 
   # VPN代理服务 
   # clash:
