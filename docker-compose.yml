@@ -1,12 +1,29 @@
 # Update Time: 2024-05-23 19:25
 version: "3.4"
 
-services:
-  # Authelia认证服务
-  authelia:
-    image: authelia/authelia:4.38.8
+x-defines:
+  service-common: &service-common-ref
     networks: [network_cluster]
     restart: always
+  deploy-common: &deploy-common-ref
+    mode: replicated
+    replicas: 1
+  placement-default: &placement-default-ref
+    placement:
+      constraints:
+        - node.role == manager
+        - node.labels.public == true
+  driver-common: &driver-common-ref
+    type: nfs
+    o: addr=${NFS_SERVER},rw,nfsvers=4
+
+services:
+  # ------------------------------------------------------------
+  # Authelia认证服务
+  # ------------------------------------------------------------
+  authelia:
+    image: authelia/authelia:4.38.8
+    <<: *service-common-ref
     # expose:
     #   - 9091
     volumes:
@@ -18,33 +35,28 @@ services:
       TZ: ${TZ}        
     deploy:
       labels:
-        - 'traefik.enable=true'
-        - 'traefik.http.routers.authelia.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)'
-        - 'traefik.http.routers.authelia.entryPoints=websecure'
-        - 'traefik.http.routers.authelia.middlewares=normal-chain@file'
-        - 'traefik.http.routers.authelia.tls.options=default'
-        - 'traefik.http.routers.authelia.service=authelia'
-        - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-        # - 'traefik.http.middlewares.auth.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}:${EXTERNAL_PORT}%2F'
-        - 'traefik.http.middlewares.auth.forwardAuth.address=https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}:${EXTERNAL_PORT}%2F'
-        - 'traefik.http.middlewares.auth.forwardAuth.trustForwardHeader=true'
-        - 'traefik.http.middlewares.auth.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
-        # - "traefik.http.middlewares.auth.forwardauth.authRequestHeaders.X-Forwarded-Proto=https"
-        # - "traefik.http.middlewares.authelia.forwardauth.tls.insecureSkipVerify=true"   
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-          - node.labels.type == vm
-          - node.labels.public == true
+        - traefik.enable=true
+        - traefik.http.routers.authelia.rule=Host(`auth.${DOMAIN_SWARM}`,`auth.${DOMAIN_EMERGENCY}`)
+        - traefik.http.routers.authelia.entryPoints=websecure
+        - traefik.http.routers.authelia.middlewares=normal-chain@file
+        - traefik.http.routers.authelia.tls.options=default
+        - traefik.http.routers.authelia.service=authelia
+        - traefik.http.services.authelia.loadbalancer.server.port=9091
+        # - traefik.http.middlewares.auth.forwardAuth.address=http://authelia:9091/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}:${EXTERNAL_PORT}%2F
+        - traefik.http.middlewares.auth.forwardAuth.address=https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/api/authz/forward-auth?authelia_url=https%3A%2F%2Fauth.${DOMAIN_SWARM}:${EXTERNAL_PORT}%2F
+        - traefik.http.middlewares.auth.forwardAuth.trustForwardHeader=true
+        - traefik.http.middlewares.auth.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name
+        # - traefik.http.middlewares.auth.forwardauth.authRequestHeaders.X-Forwarded-Proto=https
+      <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
       options:
         tag: docker.public.authelia
         fluentd-async-connect: "true"  
 
-  # Traefik反代服务
+  # ------------------------------------------------------------
+  # Traefik反代路由服务
+  # ------------------------------------------------------------
   traefik:
     # 网络差时更新版本耗时较长，影响服务访问，因此固定到v2.10.4，需要时再手动升级
     # image: traefik:latest
@@ -60,23 +72,21 @@ services:
     #- --providers.docker.exposedbydefault=false
     #- --providers.docker.network=network_cluster
     #- --entryPoints.web.address=:80
-    networks: [network_cluster]
-    restart: always
+    <<: *service-common-ref
     ports:
       # OpenWRT的iptables暂时不支持ingress模式,须使用host模式映射端口才能接收到来自主路由转发的WAN请求
       #- "8000:80" # HTTP
-      #- "8443:443" # HTTPS
-      #- "8080:8080"  # DashBoard
-      #- "8022:8022"  # SSH
-      #- "8022:8022"  # Authelia
       - target: 80
         published: 8000
         protocol: tcp
         mode: host
+      #- "8443:443" # HTTPS
       - target: 443
         published: 8443
         protocol: tcp
         mode: host
+      #- "8080:8080"  # DashBoard
+      #- "8022:8022"  # SSH
       - target: 8080
         published: 8080
         protocol: tcp
@@ -85,6 +95,7 @@ services:
         published: 8090
         protocol: tcp
         mode: host   
+      #- "666:666"  # Authelia
       - target: 666
         published: 666
         protocol: tcp
@@ -105,16 +116,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - nfs_traefik:/etc/traefik
     deploy:
-      mode: replicated
-      replicas: 1    
-      placement:
-        constraints:
-          - node.role == manager
-          # - node.labels.type == router
-          - node.labels.type == vm
-          - node.labels.public == true
-      #以下Labels方式的动态配置，全部改为File的动态配置在/etc/traefik/dynamic/*.yml中配置
       labels:
+      #以下Labels方式的动态配置，全部改为File的动态配置在/etc/traefik/dynamic/*.yml中配置
       #- "traefik.enable=true"
       # Dashboard配置
       #- "traefik.http.routers.api.rule=Host(`traefik.${DOMAIN_SWARM}`)"
@@ -142,81 +145,73 @@ services:
         - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:${EXTERNAL_PORT}    
         - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}  
         - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}   
+      <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
       options:
         tag: docker.public.traefik
         fluentd-async-connect: "true"  
 
-  # 主页服务
+  # ------------------------------------------------------------
+  # 主页导航服务
+  # ------------------------------------------------------------
   homepage:
     image: ghcr.nju.edu.cn/gethomepage/homepage:latest
-    networks: [network_cluster]
-    restart: on-failure
+    <<: *service-common-ref
     volumes:
       - nfs_homepage:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations
     deploy:
       labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.homepage.rule=Host(`home.${DOMAIN_SWARM}`,`home.${DOMAIN_EMERGENCY}`)"
-        - "traefik.http.routers.homepage.entrypoints=websecure"
-        - "traefik.http.routers.homepage.service=homepage"
-        - "traefik.http.routers.homepage.middlewares=auth,normal-chain@file,cors-headers@file"
-        - "traefik.http.services.homepage.loadbalancer.server.port=3000"
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-          - node.labels.type == vm
-          - node.labels.public == true
+        - traefik.enable=true
+        - traefik.http.routers.homepage.rule=Host(`home.${DOMAIN_SWARM}`,`home.${DOMAIN_EMERGENCY}`)
+        - traefik.http.routers.homepage.entrypoints=websecure
+        - traefik.http.routers.homepage.service=homepage
+        - traefik.http.routers.homepage.middlewares=auth,normal-chain@file,cors-headers@file
+        - traefik.http.services.homepage.loadbalancer.server.port=3000
+      <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
       options:
         tag: docker.public.homepage
         fluentd-async-connect: "true"  
 
-  # Tailscale VPN服务 
+  # ------------------------------------------------------------
+  # Tailscale 异地组网服务 
+  # ------------------------------------------------------------
   headscale:
     image: headscale/headscale:0.22.3
     command: headscale serve
-    networks: [network_cluster]
-    restart: on-failure
+    <<: *service-common-ref
     volumes:
       - nfs_headscale_config:/etc/headscale
       - nfs_headscale_data:/var/lib/headscale
     deploy:
       labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.headscale.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`)"
-        - "traefik.http.routers.headscale.entrypoints=websecure"
-        - "traefik.http.routers.headscale.service=headscale"
-        - "traefik.http.routers.headscale.middlewares=normal-chain@file"
-        - "traefik.http.services.headscale.loadbalancer.server.port=8080"
-        - "traefik.http.routers.headscale-metric.rule=Host(`headscale-metric.${DOMAIN_SWARM}`)"
-        - "traefik.http.routers.headscale-metric.entrypoints=websecure"
-        - "traefik.http.routers.headscale-metric.service=headscale-metric"
-        - "traefik.http.routers.headscale-metric.middlewares=normal-chain@file"
-        - "traefik.http.services.headscale-metric.loadbalancer.server.port=9090"
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-          - node.labels.type == vm 
-          - node.labels.public == true
+        - traefik.enable=true"
+        - traefik.http.routers.headscale.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`)
+        - traefik.http.routers.headscale.entrypoints=websecure
+        - traefik.http.routers.headscale.service=headscale
+        - traefik.http.routers.headscale.middlewares=normal-chain@file
+        - traefik.http.services.headscale.loadbalancer.server.port=8080
+        - traefik.http.routers.headscale-metric.rule=Host(`headscale-metric.${DOMAIN_SWARM}`)
+        - traefik.http.routers.headscale-metric.entrypoints=websecure
+        - traefik.http.routers.headscale-metric.service=headscale-metric
+        - traefik.http.routers.headscale-metric.middlewares=normal-chain@file
+        - traefik.http.services.headscale-metric.loadbalancer.server.port=9090
+      <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
       options:
         tag: docker.public.headscale
         fluentd-async-connect: "true"  
 
+  # ------------------------------------------------------------
   # Headscale WebUI 
+  # ------------------------------------------------------------
   headscale-webui:
     image: ifargle/headscale-webui:latest
-    networks: [network_cluster]
-    restart: on-failure
+    <<: *service-common-ref
     volumes:
       - nfs_headscale_config:/etc/headscale:ro
       - nfs_headscale_ui:/data
@@ -238,12 +233,12 @@ services:
       TZ: ${TZ}      
     deploy:
       labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.headscale-webui.rule=Host(`hsui.${DOMAIN_SWARM}`,`hsui.${DOMAIN_EMERGENCY}`)"
-        - "traefik.http.routers.headscale-webui.entrypoints=websecure"
-        - "traefik.http.routers.headscale-webui.service=headscale-webui"
-        - "traefik.http.routers.headscale-webui.middlewares=auth,normal-chain@file"
-        - "traefik.http.services.headscale-webui.loadbalancer.server.port=5000"  
+        - traefik.enable=true
+        - traefik.http.routers.headscale-webui.rule=Host(`hsui.${DOMAIN_SWARM}`,`hsui.${DOMAIN_EMERGENCY}`)
+        - traefik.http.routers.headscale-webui.entrypoints=websecure
+        - traefik.http.routers.headscale-webui.service=headscale-webui
+        - traefik.http.routers.headscale-webui.middlewares=auth,normal-chain@file
+        - traefik.http.services.headscale-webui.loadbalancer.server.port=5000" 
         - homepage.group=Public
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
@@ -251,12 +246,7 @@ services:
         - homepage.description=Tailscale VPN服务
         - homepage.ping=headscale
         - homepage.weight=31
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-          - node.labels.type == vm
+      <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
       options:
@@ -361,69 +351,65 @@ networks:
   network_cluster:
     external: true
 
-x-common-keys-volume: &common-keys-volume
-  type: nfs
-  o: addr=${NFS_SERVER},rw,nfsvers=4
-
 volumes:
   # 挂载NFS卷，用于Swarm集群node迁移时保持数据
   nfs_traefik:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/traefik
   nfs_authelia_config:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/authelia/config
   nfs_authelia_keys:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/authelia/keys      
   nfs_authentik_media:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/authentik/media  
   nfs_authentik_templates:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/authentik/templates  
   nfs_authentik_certs:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/authentik/certs  
   nfs_homepage:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/homepage
   nfs_clash_config:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/clash/config
   nfs_clash_ui:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/clash/ui
   nfs_headscale_config:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/headscale/config
   nfs_headscale_data:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/headscale/data
   nfs_headscale_ui:
     driver: local
     driver_opts:
-      <<: *common-keys-volume
+      <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/headscale-webui/data
