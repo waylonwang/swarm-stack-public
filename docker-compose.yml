@@ -32,7 +32,7 @@ services:
     healthcheck:
       disable: true
     environment:
-      TZ: ${TZ}        
+      TZ: ${TZ}
     deploy:
       labels:
         - traefik.enable=true
@@ -52,7 +52,7 @@ services:
       driver: fluentd
       options:
         tag: docker.public.authelia
-        fluentd-async-connect: "true"  
+        fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
   # Traefik反代路由服务
@@ -94,12 +94,12 @@ services:
       - target: 8090
         published: 8090
         protocol: tcp
-        mode: host   
+        mode: host
       #- "666:666"  # Authelia
       - target: 666
         published: 666
         protocol: tcp
-        mode: host              
+        mode: host
     environment:
       # 直接使用Portainer容器内的环境变量
       ALICLOUD_ACCESS_KEY: ${ALICLOUD_ACCESS_KEY}
@@ -139,18 +139,18 @@ services:
         - homepage.icon=traefik.png
         - homepage.href=https://traefik.${DOMAIN_SWARM}:${EXTERNAL_PORT}/
         - homepage.description=域名反向代理服务
-        - homepage.ping=traefik 
+        - homepage.ping=traefik
         - homepage.weight=10
         - homepage.widget.type=traefik
-        - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:${EXTERNAL_PORT}    
-        - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}  
-        - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}   
+        - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+        - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}
+        - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}
       <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
       options:
         tag: docker.public.traefik
-        fluentd-async-connect: "true"  
+        fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
   # 主页导航服务
@@ -174,10 +174,10 @@ services:
       driver: fluentd
       options:
         tag: docker.public.homepage
-        fluentd-async-connect: "true"  
+        fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
-  # Tailscale 异地组网服务 
+  # Tailscale 异地组网服务
   # ------------------------------------------------------------
   headscale:
     image: headscale/headscale:0.22.3
@@ -204,10 +204,10 @@ services:
       driver: fluentd
       options:
         tag: docker.public.headscale
-        fluentd-async-connect: "true"  
+        fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
-  # Headscale WebUI 
+  # Headscale WebUI
   # ------------------------------------------------------------
   headscale-webui:
     image: ifargle/headscale-webui:latest
@@ -230,7 +230,7 @@ services:
       OIDC_CLIENT_ID: ${HSUI_OIDC_CLIENT_ID}
       OIDC_CLIENT_SECRET: ${HSUI_OIDC_CLIENT_SECRET}
       KEY: ${HEADSCALE_KEY}
-      TZ: ${TZ}      
+      TZ: ${TZ}
     deploy:
       labels:
         - traefik.enable=true
@@ -238,7 +238,7 @@ services:
         - traefik.http.routers.headscale-webui.entrypoints=websecure
         - traefik.http.routers.headscale-webui.service=headscale-webui
         - traefik.http.routers.headscale-webui.middlewares=auth,normal-chain@file
-        - traefik.http.services.headscale-webui.loadbalancer.server.port=5000" 
+        - traefik.http.services.headscale-webui.loadbalancer.server.port=5000"
         - homepage.group=Public
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
@@ -251,9 +251,9 @@ services:
       driver: fluentd
       options:
         tag: docker.public.headscale-webui
-        fluentd-async-connect: "true"  
+        fluentd-async-connect: "true"
 
-  # VPN代理服务 
+  # VPN代理服务
   # clash:
   #   image: dreamacro/clash:latest
   #   networks: [network_cluster]
@@ -263,8 +263,8 @@ services:
   #     - nfs_clash_ui:/ui
   #   # ports:
   #   #   - 7890:7890
-  #   #   - 7891:7891      
-  #   #   - 9090:9090  
+  #   #   - 7891:7891
+  #   #   - 9090:9090
   #   deploy:
   #     labels:
   #       - "traefik.enable=true"
@@ -272,12 +272,12 @@ services:
   #       - "traefik.http.routers.clash.entrypoints=websecure"
   #       - "traefik.http.routers.clash.service=clash"
   #       - "traefik.http.routers.clash.middlewares=normal-chain@file"
-  #       - "traefik.http.services.clash.loadbalancer.server.port=9090"  
+  #       - "traefik.http.services.clash.loadbalancer.server.port=9090"
   #       - homepage.group=Base & Public
   #       - homepage.name=SwarmClash
   #       - homepage.icon=clash.png
   #       - homepage.href=https://clash.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ui
-  #       - homepage.description=SwarmClash科学代理服务         
+  #       - homepage.description=SwarmClash科学代理服务
   #       - homepage.siteMonitor=http://clash:9090
   #       - homepage.weight=41
   #     mode: replicated
@@ -285,7 +285,7 @@ services:
   #     placement:
   #       constraints:
   #         - node.role == manager
-  #         - node.labels.type == vm 
+  #         - node.labels.type == vm
 
   # # Authentik认证服务
   # authentik-server:
@@ -300,7 +300,7 @@ services:
   #     AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
   #     AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
   #     AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
-  #     TZ: ${TZ}        
+  #     TZ: ${TZ}
   #   volumes:
   #     - nfs_authentik_media:/media
   #     - nfs_authentik_templates:/templates
@@ -319,13 +319,13 @@ services:
   #       constraints:
   #         - node.role == manager
   #         - node.labels.type == vm
-  #         - node.labels.public == true      
+  #         - node.labels.public == true
 
   # authentik-worker:
   #   image: ghcr.nju.edu.cn/goauthentik/server:2024.4.2
   #   command: worker
   #   networks: [network_cluster]
-  #   restart: unless-stopped    
+  #   restart: unless-stopped
   #   environment:
   #     AUTHENTIK_REDIS__HOST: redis
   #     AUTHENTIK_POSTGRESQL__HOST: postgres
@@ -333,8 +333,8 @@ services:
   #     AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
   #     AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
   #     AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
-  #     TZ: ${TZ}           
-  #   volumes:  
+  #     TZ: ${TZ}
+  #   volumes:
   #     - nfs_authentik_media:/media
   #     - nfs_authentik_certs:/certs
   #     - nfs_authentik_templates:/templates
@@ -345,7 +345,7 @@ services:
   #       constraints:
   #         - node.role == manager
   #         - node.labels.type == vm
-  #         - node.labels.public == true   
+  #         - node.labels.public == true
 
 networks:
   network_cluster:
@@ -367,22 +367,22 @@ volumes:
     driver: local
     driver_opts:
       <<: *driver-common-ref
-      device: :${NFS_DEVICE}/public/authelia/keys      
+      device: :${NFS_DEVICE}/public/authelia/keys
   nfs_authentik_media:
     driver: local
     driver_opts:
       <<: *driver-common-ref
-      device: :${NFS_DEVICE}/public/authentik/media  
+      device: :${NFS_DEVICE}/public/authentik/media
   nfs_authentik_templates:
     driver: local
     driver_opts:
       <<: *driver-common-ref
-      device: :${NFS_DEVICE}/public/authentik/templates  
+      device: :${NFS_DEVICE}/public/authentik/templates
   nfs_authentik_certs:
     driver: local
     driver_opts:
       <<: *driver-common-ref
-      device: :${NFS_DEVICE}/public/authentik/certs  
+      device: :${NFS_DEVICE}/public/authentik/certs
   nfs_homepage:
     driver: local
     driver_opts:
