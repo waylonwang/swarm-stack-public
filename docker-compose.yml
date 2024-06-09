@@ -22,7 +22,7 @@ services:
   # Authelia认证服务
   # ------------------------------------------------------------
   authelia:
-    image: authelia/authelia:4.38.8
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/authelia/authelia:4.38.8
     <<: *service-common-ref
     # expose:
     #   - 9091
@@ -60,7 +60,7 @@ services:
   traefik:
     # 网络差时更新版本耗时较长，影响服务访问，因此固定到v2.10.4，需要时再手动升级
     # image: traefik:latest
-    image: traefik:v2.10.4
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/library/traefik:v2.10.4
     #以下CLI方式的静态配置，全部改为File静态配置在/etc/traefik/traefik.yml中配置
     #command:
     #- --api.insecure=true # set to 'false' on production
@@ -180,7 +180,7 @@ services:
   # Tailscale 异地组网服务
   # ------------------------------------------------------------
   headscale:
-    image: headscale/headscale:0.22.3
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/headscale/headscale:0.22.3
     command: headscale serve
     <<: *service-common-ref
     volumes:
@@ -210,7 +210,7 @@ services:
   # Headscale WebUI
   # ------------------------------------------------------------
   headscale-webui:
-    image: ifargle/headscale-webui:latest
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ifargle/headscale-webui:latest
     <<: *service-common-ref
     volumes:
       - nfs_headscale_config:/etc/headscale:ro
