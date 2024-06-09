@@ -210,7 +210,7 @@ services:
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
         - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-        - homepage.description=Tailscale VPN服务
+        - homepage.description=Tailscale异地组网服务
         - homepage.ping=headscale
         - homepage.siteMonitor=http://headscale-webui:5000
         - homepage.weight=31
