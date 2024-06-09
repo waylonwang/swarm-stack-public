@@ -47,6 +47,13 @@ services:
         - traefik.http.middlewares.auth.forwardAuth.trustForwardHeader=true
         - traefik.http.middlewares.auth.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name
         # - traefik.http.middlewares.auth.forwardauth.authRequestHeaders.X-Forwarded-Proto=https
+        - homepage.group=Base
+        - homepage.name=Authelia
+        - homepage.icon=authelia.png
+        - homepage.href=https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/
+        - homepage.description=用户认证服务
+        - homepage.ping=authelia
+        - homepage.weight=10
       <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
@@ -138,9 +145,9 @@ services:
         - homepage.name=Traefik
         - homepage.icon=traefik.png
         - homepage.href=https://traefik.${DOMAIN_SWARM}:${EXTERNAL_PORT}/
-        - homepage.description=域名反向代理服务
+        - homepage.description=域名反代路由服务
         - homepage.ping=traefik
-        - homepage.weight=10
+        - homepage.weight=11
         - homepage.widget.type=traefik
         - homepage.widget.url=https://traefik.${DOMAIN_SWARM}:${EXTERNAL_PORT}
         - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}
