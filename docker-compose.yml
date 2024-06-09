@@ -210,7 +210,7 @@ services:
   # Headscale WebUI
   # ------------------------------------------------------------
   headscale-webui:
-    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ifargle/headscale-webui:latest
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ifargle/headscale-webui:v0.6.2
     <<: *service-common-ref
     volumes:
       - nfs_headscale_config:/etc/headscale:ro
