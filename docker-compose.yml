@@ -206,6 +206,14 @@ services:
         - traefik.http.routers.headscale-metric.service=headscale-metric
         - traefik.http.routers.headscale-metric.middlewares=normal-chain@file
         - traefik.http.services.headscale-metric.loadbalancer.server.port=9090
+        - homepage.group=Public
+        - homepage.name=Headscale
+        - homepage.icon=tailscale.png
+        - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+        - homepage.description=Tailscale VPN服务
+        - homepage.ping=headscale
+        - homepage.siteMonitor=http://headscale-webui:5000
+        - homepage.weight=31
       <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
@@ -246,14 +254,14 @@ services:
         - traefik.http.routers.headscale-webui.service=headscale-webui
         - traefik.http.routers.headscale-webui.middlewares=auth,normal-chain@file
         - traefik.http.services.headscale-webui.loadbalancer.server.port=5000"
-        - homepage.group=Public
-        - homepage.name=Headscale
-        - homepage.icon=tailscale.png
-        - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-        - homepage.description=Tailscale VPN服务
-        - homepage.ping=headscale
-        - homepage.weight=31
-      <<: [*deploy-common-ref, *placement-default-ref]
+      #   - homepage.group=Public
+      #   - homepage.name=Headscale
+      #   - homepage.icon=tailscale.png
+      #   - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+      #   - homepage.description=Tailscale VPN服务
+      #   - homepage.ping=headscale
+      #   - homepage.weight=32
+      # <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
       options:
