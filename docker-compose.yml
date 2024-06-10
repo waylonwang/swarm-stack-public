@@ -280,7 +280,7 @@ services:
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/tailscale/tailscale:v1.66
     hostname: swarm-tailscale-client
     # command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
-    commannd: tailscaled
+    command: tailscaled
     healthcheck:
       test: ["CMD-SHELL", "tailscale status"]
       interval: 1s
