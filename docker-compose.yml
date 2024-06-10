@@ -250,6 +250,55 @@ services:
         fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
+  # Headscale Admin
+  # ------------------------------------------------------------
+  headscale-admin:
+    <<: *service-common-ref
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/goodieshq/headscale-admin:0.1.12b
+    environment:
+      <<: *env-common-ref    
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.headscale-admin.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`) && PathPrefix(`/admin`)
+        - traefik.http.routers.headscale-admin.entrypoints=websecure
+        - traefik.http.routers.headscale-admin.service=headscale-admin
+        - traefik.http.routers.headscale-admin.middlewares=auth,normal-chain@file
+        - traefik.http.services.headscale-admin.loadbalancer.server.port=80
+      <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.headscale-admin
+        fluentd-async-connect: "true"
+
+  # ------------------------------------------------------------
+  # Tailscale Client
+  # ------------------------------------------------------------
+  tailscale:
+    <<: *service-common-ref
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/tailscale/tailscale:v1.66
+    # command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW   
+    environment:
+      <<: *env-common-ref
+      TS_AUTHKEY: 32rm9hfFJStzJA4yMa8fBv4J6m759Hds
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_USERSPACE: 0
+    volumes:
+      - nfs_tailscale_lib:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    deploy:
+      <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.headscale-admin
+        fluentd-async-connect: "true"
+
+  # ------------------------------------------------------------
   # Headscale WebUI
   # ------------------------------------------------------------
   # headscale-webui:
@@ -297,29 +346,6 @@ services:
   #     options:
   #       tag: docker.public.headscale-webui
   #       fluentd-async-connect: "true"
-
-  # ------------------------------------------------------------
-  # Headscale Admin
-  # ------------------------------------------------------------
-  headscale-admin:
-    <<: *service-common-ref
-    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/goodieshq/headscale-admin:0.1.12b
-    environment:
-      <<: *env-common-ref    
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.headscale-admin.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`) && PathPrefix(`/admin`)
-        - traefik.http.routers.headscale-admin.entrypoints=websecure
-        - traefik.http.routers.headscale-admin.service=headscale-admin
-        - traefik.http.routers.headscale-admin.middlewares=auth,normal-chain@file
-        - traefik.http.services.headscale-admin.loadbalancer.server.port=80
-      <<: [*deploy-common-ref, *placement-default-ref]
-    logging:
-      driver: fluentd
-      options:
-        tag: docker.public.headscale-admin
-        fluentd-async-connect: "true"
 
   # VPN代理服务
   # clash:
@@ -481,3 +507,8 @@ volumes:
     driver_opts:
       <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/headscale-webui/data
+  nfs_tailscale_lib:
+    driver: local
+    driver_opts:
+      <<: *driver-common-ref
+      device: :${NFS_DEVICE}/public/tailscale/lib      
