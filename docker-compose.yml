@@ -252,51 +252,51 @@ services:
   # ------------------------------------------------------------
   # Headscale WebUI
   # ------------------------------------------------------------
-  headscale-webui:
-    <<: *service-common-ref
-    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ifargle/headscale-webui:v0.6.2
-    ports:
-      - 12350:5000  
-    volumes:
-      - nfs_headscale_config:/etc/headscale:ro
-      - nfs_headscale_ui:/data
-    environment:
-      <<: *env-common-ref
-      HS_SERVER: https://headscale.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-      DOMAIN_NAME: https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-      LOG_LEVEL: "Debug"
-      # AUTH_TYPE: oidc # Basic: basic auth模式
-      AUTH_TYPE: basic # oidc: oidc auth模式
-      PUID: ${DOCKER_PUID}
-      PGID: ${DOCKER_PGID}
-      SCRIPT_NAME: "" #${HEADSCALE_SCRIPT_NAME}
-      BASIC_AUTH_USER: ${HEADSCALE_BASIC_AUTH_USER}
-      BASIC_AUTH_PASS: ${HEADSCALE_BASIC_AUTH_PASS}
-      OIDC_AUTH_URL: https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/.well-known/openid-configuration
-      OIDC_CLIENT_ID: ${HSUI_OIDC_CLIENT_ID}
-      OIDC_CLIENT_SECRET: ${HSUI_OIDC_CLIENT_SECRET}
-      KEY: ${HEADSCALE_KEY}
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.headscale-webui.rule=Host(`hsui.${DOMAIN_SWARM}`,`hsui.${DOMAIN_EMERGENCY}`)
-        - traefik.http.routers.headscale-webui.entrypoints=websecure
-        - traefik.http.routers.headscale-webui.service=headscale-webui
-        - traefik.http.routers.headscale-webui.middlewares=auth,normal-chain@file
-        - traefik.http.services.headscale-webui.loadbalancer.server.port=5000
-      #   - homepage.group=Public
-      #   - homepage.name=Headscale
-      #   - homepage.icon=tailscale.png
-      #   - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-      #   - homepage.description=Tailscale VPN服务
-      #   - homepage.ping=headscale
-      #   - homepage.weight=32
-      <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
-    logging:
-      driver: fluentd
-      options:
-        tag: docker.public.headscale-webui
-        fluentd-async-connect: "true"
+  # headscale-webui:
+  #   <<: *service-common-ref
+  #   image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ifargle/headscale-webui:v0.6.2
+  #   ports:
+  #     - 12350:5000  
+  #   volumes:
+  #     - nfs_headscale_config:/etc/headscale:ro
+  #     - nfs_headscale_ui:/data
+  #   environment:
+  #     <<: *env-common-ref
+  #     HS_SERVER: https://headscale.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+  #     DOMAIN_NAME: https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+  #     LOG_LEVEL: "Debug"
+  #     # AUTH_TYPE: oidc # Basic: basic auth模式
+  #     AUTH_TYPE: basic # oidc: oidc auth模式
+  #     PUID: ${DOCKER_PUID}
+  #     PGID: ${DOCKER_PGID}
+  #     SCRIPT_NAME: "" #${HEADSCALE_SCRIPT_NAME}
+  #     BASIC_AUTH_USER: ${HEADSCALE_BASIC_AUTH_USER}
+  #     BASIC_AUTH_PASS: ${HEADSCALE_BASIC_AUTH_PASS}
+  #     OIDC_AUTH_URL: https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/.well-known/openid-configuration
+  #     OIDC_CLIENT_ID: ${HSUI_OIDC_CLIENT_ID}
+  #     OIDC_CLIENT_SECRET: ${HSUI_OIDC_CLIENT_SECRET}
+  #     KEY: ${HEADSCALE_KEY}
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.headscale-webui.rule=Host(`hsui.${DOMAIN_SWARM}`,`hsui.${DOMAIN_EMERGENCY}`)
+  #       - traefik.http.routers.headscale-webui.entrypoints=websecure
+  #       - traefik.http.routers.headscale-webui.service=headscale-webui
+  #       - traefik.http.routers.headscale-webui.middlewares=auth,normal-chain@file
+  #       - traefik.http.services.headscale-webui.loadbalancer.server.port=5000
+  #     #   - homepage.group=Public
+  #     #   - homepage.name=Headscale
+  #     #   - homepage.icon=tailscale.png
+  #     #   - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+  #     #   - homepage.description=Tailscale VPN服务
+  #     #   - homepage.ping=headscale
+  #     #   - homepage.weight=32
+  #     <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
+  #   logging:
+  #     driver: fluentd
+  #     options:
+  #       tag: docker.public.headscale-webui
+  #       fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
   # Headscale Admin
