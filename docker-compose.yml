@@ -192,8 +192,8 @@ services:
     command: headscale serve
     <<: *service-common-ref
     ports:
-      - 12380:8080
-      - 12390:9090
+      - 12380:8181
+      - 12390:9191
     volumes:
       - nfs_headscale_config:/etc/headscale
       - nfs_headscale_data:/var/lib/headscale
@@ -209,7 +209,7 @@ services:
         - traefik.http.routers.headscale-metric.entrypoints=websecure
         - traefik.http.routers.headscale-metric.service=headscale-metric
         - traefik.http.routers.headscale-metric.middlewares=normal-chain@file
-        - traefik.http.services.headscale-metric.loadbalancer.server.port=9090
+        - traefik.http.services.headscale-metric.loadbalancer.server.port=9191
         - homepage.group=Public
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
