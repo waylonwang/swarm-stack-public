@@ -234,17 +234,16 @@ services:
       HS_SERVER: https://headscale.${DOMAIN_SWARM}:${EXTERNAL_PORT}
       DOMAIN_NAME: https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
       LOG_LEVEL: "Debug"
-      # AUTH_TYPE: oidc # Basic: basic auth模式
-      AUTH_TYPE: basic # oidc: oidc auth模式
+      AUTH_TYPE: oidc # Basic: basic auth模式
+      # AUTH_TYPE: basic # oidc: oidc auth模式
       PUID: ${DOCKER_PUID}
       PGID: ${DOCKER_PGID}
-      SCRIPT_NAME: "admin" #${HEADSCALE_SCRIPT_NAME}
+      SCRIPT_NAME: "" #${HEADSCALE_SCRIPT_NAME}
       BASIC_AUTH_USER: ${HEADSCALE_BASIC_AUTH_USER}
       BASIC_AUTH_PASS: ${HEADSCALE_BASIC_AUTH_PASS}
       OIDC_AUTH_URL: https://auth.${DOMAIN_SWARM}:${EXTERNAL_PORT}/.well-known/openid-configuration
       OIDC_CLIENT_ID: ${HSUI_OIDC_CLIENT_ID}
       OIDC_CLIENT_SECRET: ${HSUI_OIDC_CLIENT_SECRET}
-      DATA_DIRECTORY: /app/data
       KEY: ${HEADSCALE_KEY}
       TZ: ${TZ}
     deploy:
@@ -262,7 +261,7 @@ services:
       #   - homepage.description=Tailscale VPN服务
       #   - homepage.ping=headscale
       #   - homepage.weight=32
-      # <<: [*deploy-common-ref, *placement-default-ref]
+      <<: [*deploy-common-ref, *placement-default-ref]
     logging:
       driver: fluentd
       options:
