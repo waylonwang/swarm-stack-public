@@ -278,16 +278,23 @@ services:
   tailscale:
     <<: *service-common-ref
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/tailscale/tailscale:v1.66
-    command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
+    hostname: swarm-tailscale-client
+    # command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
+    commannd: tailscaled
+    healthcheck:
+      test: ["CMD-SHELL", "tailscale status"]
+      interval: 1s
+      timeout: 5s
+      retries: 60    
     cap_add:
       - NET_ADMIN
       - NET_RAW
-      - sys_module
+      - SYS_MODULE
     environment:
       <<: *env-common-ref
-      TS_AUTHKEY: 32rm9hfFJStzJA4yMa8fBv4J6m759Hds
+      # TS_AUTHKEY: 32rm9hfFJStzJA4yMa8fBv4J6m759Hds
       TS_STATE_DIR: /var/lib/tailscale
-      TS_USERSPACE: 0
+      # TS_USERSPACE: 0
     volumes:
       - nfs_tailscale_lib:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun
