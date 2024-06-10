@@ -292,7 +292,7 @@ services:
       - SYS_MODULE
     environment:
       <<: *env-common-ref
-      # TS_AUTHKEY: 32rm9hfFJStzJA4yMa8fBv4J6m759Hds
+      TS_AUTHKEY: 32rm9hfFJStzJA4yMa8fBv4J6m759Hds
       TS_STATE_DIR: /var/lib/tailscale
       # TS_USERSPACE: 0
     volumes:
