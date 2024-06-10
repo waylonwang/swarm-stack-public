@@ -204,7 +204,7 @@ services:
         - traefik.http.routers.headscale.entrypoints=websecure
         - traefik.http.routers.headscale.service=headscale
         - traefik.http.routers.headscale.middlewares=normal-chain@file
-        - traefik.http.services.headscale.loadbalancer.server.port=8080
+        - traefik.http.services.headscale.loadbalancer.server.port=8181
         - traefik.http.routers.headscale-metric.rule=Host(`headscale-metric.${DOMAIN_SWARM}`)
         - traefik.http.routers.headscale-metric.entrypoints=websecure
         - traefik.http.routers.headscale-metric.service=headscale-metric
