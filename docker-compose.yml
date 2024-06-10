@@ -183,44 +183,44 @@ services:
         tag: docker.public.homepage
         fluentd-async-connect: "true"
 
-  # # ------------------------------------------------------------
-  # # Tailscale 异地组网服务
-  # # ------------------------------------------------------------
-  # headscale:
-  #   image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/headscale/headscale:0.22.3
-  #   # command: serve
-  #   command: headscale serve
-  #   <<: *service-common-ref
-  #   volumes:
-  #     - nfs_headscale_config:/etc/headscale
-  #     - nfs_headscale_data:/var/lib/headscale
-  #   deploy:
-  #     labels:
-  #       - traefik.enable=true"
-  #       - traefik.http.routers.headscale.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`)
-  #       - traefik.http.routers.headscale.entrypoints=websecure
-  #       - traefik.http.routers.headscale.service=headscale
-  #       - traefik.http.routers.headscale.middlewares=normal-chain@file
-  #       - traefik.http.services.headscale.loadbalancer.server.port=8080
-  #       - traefik.http.routers.headscale-metric.rule=Host(`headscale-metric.${DOMAIN_SWARM}`)
-  #       - traefik.http.routers.headscale-metric.entrypoints=websecure
-  #       - traefik.http.routers.headscale-metric.service=headscale-metric
-  #       - traefik.http.routers.headscale-metric.middlewares=normal-chain@file
-  #       - traefik.http.services.headscale-metric.loadbalancer.server.port=9090
-  #       - homepage.group=Public
-  #       - homepage.name=Headscale
-  #       - homepage.icon=tailscale.png
-  #       - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-  #       - homepage.description=Tailscale异地组网服务
-  #       - homepage.ping=headscale
-  #       - homepage.siteMonitor=http://headscale-webui:5000
-  #       - homepage.weight=31
-  #     <<: [*deploy-common-ref, *placement-default-ref]
-  #   logging:
-  #     driver: fluentd
-  #     options:
-  #       tag: docker.public.headscale
-  #       fluentd-async-connect: "true"
+  # ------------------------------------------------------------
+  # Tailscale 异地组网服务
+  # ------------------------------------------------------------
+  headscale:
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/headscale/headscale:0.22.3
+    # command: serve
+    command: headscale serve
+    <<: *service-common-ref
+    volumes:
+      - nfs_headscale_config:/etc/headscale
+      - nfs_headscale_data:/var/lib/headscale
+    deploy:
+      labels:
+        - traefik.enable=true"
+        - traefik.http.routers.headscale.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`)
+        - traefik.http.routers.headscale.entrypoints=websecure
+        - traefik.http.routers.headscale.service=headscale
+        - traefik.http.routers.headscale.middlewares=normal-chain@file
+        - traefik.http.services.headscale.loadbalancer.server.port=8080
+        - traefik.http.routers.headscale-metric.rule=Host(`headscale-metric.${DOMAIN_SWARM}`)
+        - traefik.http.routers.headscale-metric.entrypoints=websecure
+        - traefik.http.routers.headscale-metric.service=headscale-metric
+        - traefik.http.routers.headscale-metric.middlewares=normal-chain@file
+        - traefik.http.services.headscale-metric.loadbalancer.server.port=9090
+        - homepage.group=Public
+        - homepage.name=Headscale
+        - homepage.icon=tailscale.png
+        - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+        - homepage.description=Tailscale异地组网服务
+        - homepage.ping=headscale
+        - homepage.siteMonitor=http://headscale-webui:5000
+        - homepage.weight=31
+      <<: [*deploy-common-ref, *placement-default-ref]
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.headscale
+        fluentd-async-connect: "true"
 
   # # ------------------------------------------------------------
   # # Headscale WebUI
