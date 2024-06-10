@@ -226,15 +226,15 @@ services:
         - traefik.http.routers.headscale-metric.rule=Host(`headscale-metric.${DOMAIN_SWARM}`)
         - traefik.http.routers.headscale-metric.entrypoints=websecure
         - traefik.http.routers.headscale-metric.service=headscale-metric
-        - traefik.http.routers.headscale-metric.middlewares=normal-chain@file
+        - traefik.http.routers.headscale-metric.middlewares=cors-headers@file,normal-chain@file
         - traefik.http.services.headscale-metric.loadbalancer.server.port=9191
         # Configure CORS middleware if needed
-        - traefik.http.middlewares.headscale-cors.headers.accesscontrolallowmethods=GET,POST,PUT,PATCH,DELETE,OPTIONS
-        - traefik.http.middlewares.headscale-cors.headers.accesscontrolallowheaders=*
+        # - traefik.http.middlewares.headscale-cors.headers.accesscontrolallowmethods=GET,POST,PUT,PATCH,DELETE,OPTIONS
+        # - traefik.http.middlewares.headscale-cors.headers.accesscontrolallowheaders=*
         # - traefik.http.middlewares.headscale-cors.headers.accesscontrolalloworiginlist=""  # Add other origins if needed
-        - traefik.http.middlewares.headscale-cors.headers.accesscontrolmaxage=100
-        - traefik.http.middlewares.headscale-cors.headers.addvaryheader=true
-        - traefik.http.routers.headscale.middlewares=headscale-cors
+        # - traefik.http.middlewares.headscale-cors.headers.accesscontrolmaxage=100
+        # - traefik.http.middlewares.headscale-cors.headers.addvaryheader=true
+        # - traefik.http.routers.headscale.middlewares=headscale-cors
         # UDP ports for DERP, etc
         - traefik.udp.services.headscale-udp-41641.loadbalancer.server.port=41641
         - traefik.udp.services.headscale-udp-3478.loadbalancer.server.port=3478        
