@@ -237,10 +237,10 @@ services:
         - homepage.group=Public
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
-        - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}/admin
+        - homepage.href=https://headscale.${DOMAIN_SWARM}:${EXTERNAL_PORT}/admin
         - homepage.description=Tailscale异地组网服务
         - homepage.ping=headscale
-        - homepage.siteMonitor=http://headscale-admin
+        - homepage.siteMonitor=http://headscale-admin:80
         - homepage.weight=31
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
     logging:
