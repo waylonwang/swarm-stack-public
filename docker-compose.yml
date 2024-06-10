@@ -278,10 +278,11 @@ services:
   tailscale:
     <<: *service-common-ref
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/tailscale/tailscale:v1.66
-    # command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
+    command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
     cap_add:
       - NET_ADMIN
-      - NET_RAW   
+      - NET_RAW
+      - sys_module
     environment:
       <<: *env-common-ref
       TS_AUTHKEY: 32rm9hfFJStzJA4yMa8fBv4J6m759Hds
@@ -295,7 +296,7 @@ services:
     logging:
       driver: fluentd
       options:
-        tag: docker.public.headscale-admin
+        tag: docker.public.tailscale
         fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
