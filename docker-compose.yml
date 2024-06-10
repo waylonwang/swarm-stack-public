@@ -231,6 +231,8 @@ services:
   headscale-webui:
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/ifargle/headscale-webui:v0.6.2
     <<: *service-common-ref
+    ports:
+      - 12350:5000  
     volumes:
       - nfs_headscale_config:/etc/headscale:ro
       - nfs_headscale_ui:/data
