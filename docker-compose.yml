@@ -313,7 +313,7 @@ services:
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.http.routers.headscale-admin.rule=Host(`hsadmin.${DOMAIN_SWARM}`,`hsadmin.${DOMAIN_EMERGENCY}`) && PathPrefix(`/admin`)
+        - traefik.http.routers.headscale-admin.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`) && PathPrefix(`/admin`)
         - traefik.http.routers.headscale-admin.entrypoints=websecure
         - traefik.http.routers.headscale-admin.service=headscale-admin
         - traefik.http.routers.headscale-admin.middlewares=normal-chain@file
