@@ -199,7 +199,7 @@ services:
       - nfs_headscale_data:/var/lib/headscale
     deploy:
       labels:
-        - traefik.enable=true"
+        - traefik.enable=true
         - traefik.http.routers.headscale.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`)
         - traefik.http.routers.headscale.entrypoints=websecure
         - traefik.http.routers.headscale.service=headscale
@@ -210,6 +210,13 @@ services:
         - traefik.http.routers.headscale-metric.service=headscale-metric
         - traefik.http.routers.headscale-metric.middlewares=normal-chain@file
         - traefik.http.services.headscale-metric.loadbalancer.server.port=9191
+              # Configure CORS middleware if needed
+        # - traefik.http.middlewares.headscale-cors.headers.accesscontrolallowmethods=GET,POST,PUT,PATCH,DELETE,OPTIONS
+        # - traefik.http.middlewares.headscale-cors.headers.accesscontrolallowheaders=*
+        # - traefik.http.middlewares.headscale-cors.headers.accesscontrolalloworiginlist=""  # Add other origins if needed
+        # - traefik.http.middlewares.headscale-cors.headers.accesscontrolmaxage=100
+        # - traefik.http.middlewares.headscale-cors.headers.addvaryheader=true
+        # - traefik.http.routers.headscale.middlewares: headscale-cors
         - homepage.group=Public
         - homepage.name=Headscale
         - homepage.icon=tailscale.png
