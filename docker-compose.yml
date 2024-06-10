@@ -187,7 +187,7 @@ services:
   # Tailscale 异地组网服务
   # ------------------------------------------------------------
   headscale:
-    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/headscale/0.23.0-alpha12
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/headscale/headscale:0.23.0-alpha12
     command: serve
     # command: headscale serve
     <<: *service-common-ref
