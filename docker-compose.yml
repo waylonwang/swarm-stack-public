@@ -204,12 +204,8 @@ services:
   # ------------------------------------------------------------
   headscale:
     <<: *service-common-ref
-    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/headscale/headscale:0.23.0-alpha12
-    command: serve
-    # command: headscale serve
-    ports:
-      - 12380:8181
-      - 12390:9191
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/headscale/headscale:0.22.3
+    command: headscale serve
     environment:
       <<: *env-common-ref      
     volumes:
@@ -221,12 +217,12 @@ services:
         - traefik.http.routers.headscale.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`)
         - traefik.http.routers.headscale.entrypoints=websecure
         - traefik.http.routers.headscale.service=headscale
-        - traefik.http.routers.headscale.middlewares=normal-chain@file
+        - traefik.http.routers.headscale.middlewares=cors-headers@file,normal-chain@file
         - traefik.http.services.headscale.loadbalancer.server.port=8181
         - traefik.http.routers.headscale-metric.rule=Host(`headscale-metric.${DOMAIN_SWARM}`)
         - traefik.http.routers.headscale-metric.entrypoints=websecure
         - traefik.http.routers.headscale-metric.service=headscale-metric
-        - traefik.http.routers.headscale-metric.middlewares=cors-headers@file,normal-chain@file
+        - traefik.http.routers.headscale-metric.middlewares=normal-chain@file
         - traefik.http.services.headscale-metric.loadbalancer.server.port=9191
         # Configure CORS middleware if needed
         # - traefik.http.middlewares.headscale-cors.headers.accesscontrolallowmethods=GET,POST,PUT,PATCH,DELETE,OPTIONS
@@ -244,7 +240,7 @@ services:
         - homepage.href=https://hsui.${DOMAIN_SWARM}:${EXTERNAL_PORT}
         - homepage.description=Tailscale异地组网服务
         - homepage.ping=headscale
-        - homepage.siteMonitor=http://headscale-webui:5000
+        - homepage.siteMonitor=http://headscale-webui/admin
         - homepage.weight=31
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
     logging:
@@ -316,7 +312,7 @@ services:
         - traefik.http.routers.headscale-admin.rule=Host(`headscale.${DOMAIN_SWARM}`,`headscale.${DOMAIN_EMERGENCY}`) && PathPrefix(`/admin`)
         - traefik.http.routers.headscale-admin.entrypoints=websecure
         - traefik.http.routers.headscale-admin.service=headscale-admin
-        - traefik.http.routers.headscale-admin.middlewares=normal-chain@file
+        - traefik.http.routers.headscale-admin.middlewares=auth,normal-chain@file
         - traefik.http.services.headscale-admin.loadbalancer.server.port=80
       <<: [*deploy-common-ref, *placement-default-ref]
     logging:
