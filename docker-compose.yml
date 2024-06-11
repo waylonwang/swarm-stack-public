@@ -9,6 +9,8 @@ x-defines:
   env-proxy: &env-proxy-ref
     HTTP_PROXY: ${OPENCLASH_HTTP_PROXY}
     HTTPS_PROXY: ${OPENCLASH_HTTP_PROXY}
+    http_proxy: ${OPENCLASH_HTTP_PROXY}
+    https_proxy: ${OPENCLASH_HTTP_PROXY}
   deploy-common: &deploy-common-ref
     mode: replicated
     replicas: 1
@@ -47,6 +49,11 @@ services:
       disable: true
     environment:
       <<: *env-common-ref
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.authelia
+        fluentd-async-connect: "true"
     deploy:
       labels:
         - traefik.enable=true
@@ -69,11 +76,6 @@ services:
         - homepage.ping=authelia
         - homepage.weight=10
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
-    logging:
-      driver: fluentd
-      options:
-        tag: docker.public.authelia
-        fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
   # Traefik反代路由服务
@@ -136,6 +138,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - nfs_traefik:/etc/traefik
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.traefik
+        fluentd-async-connect: "true"
     deploy:
       labels:
       #以下Labels方式的动态配置，全部改为File的动态配置在/etc/traefik/dynamic/*.yml中配置
@@ -167,11 +174,6 @@ services:
         - homepage.widget.username=${HOMEPAGE_TRAEFIK_USERNAME}
         - homepage.widget.password=${HOMEPAGE_TRAEFIK_PASSWORD}
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
-    logging:
-      driver: fluentd
-      options:
-        tag: docker.public.traefik
-        fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
   # 主页导航服务
@@ -184,6 +186,11 @@ services:
     volumes:
       - nfs_homepage:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.homepage
+        fluentd-async-connect: "true"
     deploy:
       labels:
         - traefik.enable=true
@@ -193,11 +200,6 @@ services:
         - traefik.http.routers.homepage.middlewares=auth,normal-chain@file,cors-headers@file
         - traefik.http.services.homepage.loadbalancer.server.port=3000
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
-    logging:
-      driver: fluentd
-      options:
-        tag: docker.public.homepage
-        fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
   # Tailscale 异地组网服务
@@ -211,6 +213,11 @@ services:
     volumes:
       - nfs_headscale_config:/etc/headscale
       - nfs_headscale_data:/var/lib/headscale
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.headscale
+        fluentd-async-connect: "true"
     deploy:
       labels:
         - traefik.enable=true
@@ -243,11 +250,6 @@ services:
         # - homepage.siteMonitor=http://headscale-admin/admin
         - homepage.weight=31
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
-    logging:
-      driver: fluentd
-      options:
-        tag: docker.public.headscale
-        fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
   # Headscale Admin
@@ -257,6 +259,11 @@ services:
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/goodieshq/headscale-admin:0.1.12b
     environment:
       <<: *env-common-ref    
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.headscale-admin
+        fluentd-async-connect: "true"
     deploy:
       labels:
         - traefik.enable=true
@@ -266,19 +273,14 @@ services:
         - traefik.http.routers.headscale-admin.middlewares=auth,normal-chain@file
         - traefik.http.services.headscale-admin.loadbalancer.server.port=80
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
-    logging:
-      driver: fluentd
-      options:
-        tag: docker.public.headscale-admin
-        fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
   # Tailscale Client
   # ------------------------------------------------------------
-  tailscale:
+  tailscale-sidecar:
     <<: *service-common-ref
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/tailscale/tailscale:v1.66
-    hostname: swarm-tailscale-client
+    hostname: swarm-tailscale-sidecar
     # command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
     command: tailscaled
     healthcheck:
@@ -296,15 +298,15 @@ services:
       TS_STATE_DIR: /var/lib/tailscale
       # TS_USERSPACE: 0
     volumes:
-      - nfs_tailscale_lib:/var/lib/tailscale
+      - nfs_tailscale-sidecar_lib:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun
-    deploy:
-      <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
     logging:
       driver: fluentd
       options:
-        tag: docker.public.tailscale
+        tag: docker.public.tailscale-sidecar
         fluentd-async-connect: "true"
+    deploy:
+      <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
 
   # ------------------------------------------------------------
   # Headscale WebUI
@@ -515,7 +517,7 @@ volumes:
     driver_opts:
       <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/headscale-webui/data
-  nfs_tailscale_lib:
+  nfs_tailscale-sidecar_lib:
     driver: local
     driver_opts:
       <<: *driver-common-ref
