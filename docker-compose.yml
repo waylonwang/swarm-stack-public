@@ -3,7 +3,7 @@ version: "3.4"
 
 x-defines:
   service-common: &service-common-ref
-    networks: [network_cluster, common]
+    networks: [network_cluster]
   env-common: &env-common-ref
     TZ: ${TZ:-Asia/Shanghai}    
   env-proxy: &env-proxy-ref
