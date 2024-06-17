@@ -39,6 +39,7 @@ services:
   # ------------------------------------------------------------
   authelia:
     <<: *service-common-ref
+    # image-ref: authelia/authelia:4.38.8
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/authelia/authelia:4.38.8
     # expose:
     #   - 9091
@@ -84,6 +85,7 @@ services:
     <<: *service-common-ref
     # 网络差时更新版本耗时较长，影响服务访问，因此固定到v2.10.4，需要时再手动升级
     # image: traefik:latest
+    # image-ref: library/traefik:v2.10.4
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/library/traefik:v2.10.4
     #以下CLI方式的静态配置，全部改为File静态配置在/etc/traefik/traefik.yml中配置
     #command:
@@ -180,6 +182,7 @@ services:
   # ------------------------------------------------------------
   homepage:
     <<: *service-common-ref
+    # image-ref: ghcr.io/gethomepage/homepage:latest
     image: ghcr.nju.edu.cn/gethomepage/homepage:latest
     environment:
       <<: *env-common-ref    
@@ -206,6 +209,7 @@ services:
   # ------------------------------------------------------------
   headscale:
     <<: *service-common-ref
+    # image-ref: headscale/headscale:0.22.3
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/headscale/headscale:0.22.3
     command: headscale serve
     environment:
@@ -256,6 +260,7 @@ services:
   # ------------------------------------------------------------
   headscale-admin:
     <<: *service-common-ref
+    # image-ref: goodieshq/headscale-admin:0.1.12b
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/goodieshq/headscale-admin:0.1.12b
     environment:
       <<: *env-common-ref    
@@ -279,6 +284,7 @@ services:
   # ------------------------------------------------------------
   tailscale-sidecar:
     <<: *service-common-ref
+    # image-ref: tailscale/tailscale:v1.66
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/tailscale/tailscale:v1.66
     hostname: swarm-tailscale-sidecar
     # command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
