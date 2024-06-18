@@ -284,7 +284,7 @@ services:
   # ------------------------------------------------------------
   tailscale-sidecar:
     <<: *service-common-ref
-    # image-ref: tailscale/tailscale:v1.66
+    # image+ref: tailscale/tailscale:v1.66
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/tailscale/tailscale:v1.66
     hostname: swarm-tailscale-sidecar
     # command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
