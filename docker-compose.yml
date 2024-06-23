@@ -50,11 +50,16 @@ services:
       disable: true
     environment:
       <<: *env-common-ref
+    # logging:
+    #   driver: syslog
+    #   options:
+    #     tag: docker.public.authelia
+    #     fluentd-async-connect: "true"
     logging:
       driver: fluentd
       options:
-        tag: docker.public.authelia
-        fluentd-async-connect: "true"
+        tag: authelia
+        syslog-address: "udp://crowdsec:2424"
     deploy:
       labels:
         - traefik.enable=true
