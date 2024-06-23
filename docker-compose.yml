@@ -59,7 +59,7 @@ services:
       driver: fluentd
       options:
         tag: authelia
-        syslog-address: "udp://crowdsec:2424"
+        syslog-address: "udp://crowdsec:4242"
     deploy:
       labels:
         - traefik.enable=true
