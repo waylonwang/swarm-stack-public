@@ -138,9 +138,9 @@ services:
       - target: 3306
         published: 3306
         mode: host
-      #- "6379:6379"  # Redis 
+      #- "6380:6379"  # Redis 
       - target: 6379
-        published: 6379
+        published: 6380
         mode: host
 
     environment:
