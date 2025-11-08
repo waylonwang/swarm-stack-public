@@ -138,10 +138,15 @@ services:
       - target: 3306
         published: 3306
         mode: host
+      #- "27027:27017"  # MongoDB
+      - target: 27017
+        published: 27027
+        mode: host        
       #- "6380:6379"  # Redis 
       - target: 6379
         published: 6380
         mode: host
+        
 
     environment:
       <<: *env-common-ref
