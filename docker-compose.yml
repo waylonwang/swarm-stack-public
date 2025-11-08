@@ -130,6 +130,19 @@ services:
         published: 666
         protocol: tcp
         mode: host
+      #- "5432:5432"  # Postgres
+      - target: 5432
+        published: 5432
+        mode: host
+      #- "3306:3306"  # MariaDB
+      - target: 3306
+        published: 3306
+        mode: host
+      #- "6379:6379"  # Redis 
+      - target: 6379
+        published: 6379
+        mode: host
+
     environment:
       <<: *env-common-ref
       # 直接使用Portainer容器内的环境变量
