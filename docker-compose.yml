@@ -208,7 +208,8 @@ services:
     # image-ref: ghcr.io/gethomepage/homepage:latest
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/gethomepage/homepage:latest
     environment:
-      <<: *env-common-ref    
+      <<: *env-common-ref  
+      HOMEPAGE_ALLOWED_HOSTS: "*"
     volumes:
       - nfs_homepage:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations
@@ -307,7 +308,7 @@ services:
   # ------------------------------------------------------------
   tailscale-sidecar:
     <<: *service-common-ref
-    # image+ref: tailscale/tailscale:v1.66
+    # image-ref: tailscale/tailscale:v1.66
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/tailscale/tailscale:v1.66
     hostname: swarm-tailscale-sidecar
     # command: sh -c "mkdir -p /var/run/tailscale && ln -s /tmp/tailscaled.sock /var/run/tailscale/tailscaled.sock && tailscaled"
