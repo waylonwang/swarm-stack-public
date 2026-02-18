@@ -390,46 +390,46 @@ services:
   # ------------------------------------------------------------
   # CLIProxyAPI CLIProxyApi代理服务器
   # ------------------------------------------------------------
-  # cli-proxy-api:
-  #   <<: *service-common-ref
-  #   # image-ref: eceasy/cli-proxy-api:v6.8.18
-  #   image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/eceasy/cli-proxy-api:v6.8.18
-  #   environment:
-  #     <<: *env-common-ref      
-  #     GITSTORE_GIT_TOKEN: ${CPA_GITSTORE_GIT_TOKEN}
-  #     GITSTORE_GIT_USERNAME: ${CPA_GITSTORE_GIT_USERNAME}
-  #     GITSTORE_LOCAL_PATH: ${CPA_GITSTORE_LOCAL_PATH}
-  #     GITSTORE_GIT_URL: ${CPA_GITSTORE_GIT_URL}
-  #     MANAGEMENT_PASSWORD: ${CPA_MANAGEMENT_PASSWORD}
-  #   volumes:
-  #     - nfs_cli-proxy-api_config:/CLIProxyAPI
-  #     - nfs_cli-proxy-api_profile:/root/.cli-proxy-api
-  #   ports:
-  #     - 8317:8317
-  #   logging:
-  #     driver: fluentd
-  #     options:
-  #       tag: docker.public.cli-proxy-api
-  #       fluentd-async-connect: "true"
-  #   deploy:
-  #     labels:
-  #       - traefik.enable=true
-  #       - traefik.http.routers.cli-proxy-api.rule=Host(`cpa.${DOMAIN_SWARM}`,`cpa.${DOMAIN_EMERGENCY}`)
-  #       - traefik.http.routers.cli-proxy-api.entrypoints=websecure
-  #       - traefik.http.routers.cli-proxy-api.service=cli-proxy-api
-  #       - traefik.http.middlewares.cpa-management.replacepathregex.regex=^/$$
-  #       - traefik.http.middlewares.cpa-management.replacepathregex.replacement=/management.html      
-  #       - traefik.http.routers.cli-proxy-api.middlewares=cpa-management,auth,normal-chain@file,cors-headers@file
-  #       - traefik.http.services.cli-proxy-api.loadbalancer.server.port=8317
-  #       - homepage.group=Public
-  #       - homepage.name=CLIProxyApi代理服务器
-  #       - homepage.icon=tailscale.png
-  #       - homepage.href=https://cpa.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-  #       - homepage.description=为CLI提供主流AI兼容API接口的代理服务器
-  #       - homepage.ping=cli-proxy-api
-  #       - homepage.siteMonitor=http://cli-proxy-api
-  #       - homepage.weight=41
-  #     <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
+  cli-proxy-api:
+    <<: *service-common-ref
+    # image-ref: eceasy/cli-proxy-api:v6.8.18
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/eceasy/cli-proxy-api:v6.8.18
+    environment:
+      <<: *env-common-ref      
+      GITSTORE_GIT_TOKEN: ${CPA_GITSTORE_GIT_TOKEN}
+      GITSTORE_GIT_USERNAME: ${CPA_GITSTORE_GIT_USERNAME}
+      GITSTORE_LOCAL_PATH: ${CPA_GITSTORE_LOCAL_PATH}
+      GITSTORE_GIT_URL: ${CPA_GITSTORE_GIT_URL}
+      MANAGEMENT_PASSWORD: ${CPA_MANAGEMENT_PASSWORD}
+    volumes:
+      - nfs_cli-proxy-api_config:/CLIProxyAPI
+      - nfs_cli-proxy-api_profile:/root/.cli-proxy-api
+    ports:
+      - 8317:8317
+    logging:
+      driver: fluentd
+      options:
+        tag: docker.public.cli-proxy-api
+        fluentd-async-connect: "true"
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.cli-proxy-api.rule=Host(`cpa.${DOMAIN_SWARM}`,`cpa.${DOMAIN_EMERGENCY}`)
+        - traefik.http.routers.cli-proxy-api.entrypoints=websecure
+        - traefik.http.routers.cli-proxy-api.service=cli-proxy-api
+        - traefik.http.middlewares.cpa-management.replacepathregex.regex=^/$$
+        - traefik.http.middlewares.cpa-management.replacepathregex.replacement=/management.html      
+        - traefik.http.routers.cli-proxy-api.middlewares=cpa-management,auth,normal-chain@file,cors-headers@file
+        - traefik.http.services.cli-proxy-api.loadbalancer.server.port=8317
+        - homepage.group=Public
+        - homepage.name=CLIProxyApi代理服务器
+        - homepage.icon=tailscale.png
+        - homepage.href=https://cpa.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+        - homepage.description=为CLI提供主流AI兼容API接口的代理服务器
+        - homepage.ping=cli-proxy-api
+        - homepage.siteMonitor=http://cli-proxy-api
+        - homepage.weight=41
+      <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
 
 
   # VPN代理服务
