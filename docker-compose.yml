@@ -396,6 +396,11 @@ services:
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/eceasy/cli-proxy-api:v6.8.18
     environment:
       <<: *env-common-ref      
+      GITSTORE_GIT_TOKEN: ${CPA_GITSTORE_GIT_TOKEN}
+      GITSTORE_GIT_USERNAME: ${CPA_GITSTORE_GIT_USERNAME}
+      GITSTORE_LOCAL_PATH: ${CPA_GITSTORE_LOCAL_PATH}
+      GITSTORE_GIT_URL: ${CPA_GITSTORE_GIT_URL}
+      MANAGEMENT_PASSWORD: ${CPA_MANAGEMENT_PASSWORD}
     volumes:
       - nfs_cli-proxy-api_config:/CLIProxyAPI
       - nfs_cli-proxy-api_profile:/root/.cli-proxy-api
