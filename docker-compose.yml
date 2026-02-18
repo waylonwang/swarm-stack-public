@@ -417,7 +417,7 @@ services:
         - traefik.http.routers.cli-proxy-api.rule=Host(`cpa.${DOMAIN_SWARM}`,`cpa.${DOMAIN_EMERGENCY}`)
         - traefik.http.routers.cli-proxy-api.entrypoints=websecure
         - traefik.http.routers.cli-proxy-api.service=cli-proxy-api
-        - traefik.http.middlewares.cpa-management.replacepathregex.regex=^/
+        - traefik.http.middlewares.cpa-management.replacepathregex.regex=^/$
         - traefik.http.middlewares.cpa-management.replacepathregex.replacement=/management.html      
         - traefik.http.routers.cli-proxy-api.middlewares=cpa-management,auth,normal-chain@file,cors-headers@file
         - traefik.http.services.cli-proxy-api.loadbalancer.server.port=8317
