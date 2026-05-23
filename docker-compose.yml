@@ -3,7 +3,7 @@ version: "3.4"
 
 x-defines:
   service-common: &service-common-ref
-    networks: [network_cluster, common]
+    networks: [network_swarm, common]
   env-common: &env-common-ref
     TZ: ${TZ:-Asia/Shanghai}    
   env-proxy: &env-proxy-ref
@@ -101,7 +101,7 @@ services:
     #- --providers.docker=true
     #- --providers.docker.swarmMode=true
     #- --providers.docker.exposedbydefault=false
-    #- --providers.docker.network=network_cluster
+    #- --providers.docker.network=network_swarm
     #- --entryPoints.web.address=:80
     ports:
       # OpenWRT的iptables暂时不支持ingress模式,须使用host模式映射端口才能接收到来自主路由转发的WAN请求
@@ -435,7 +435,7 @@ services:
   # VPN代理服务
   # clash:
   #   image: dreamacro/clash:latest
-  #   networks: [network_cluster]
+  #   networks: [network_swarm]
   #   restart: on-failure
   #   volumes:
   #     - nfs_clash_config:/root/.config/clash
@@ -470,7 +470,7 @@ services:
   # authentik-server:
   #   image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/goauthentik/server:2024.4.2
   #   command: server
-  #   networks: [network_cluster]
+  #   networks: [network_swarm]
   #   restart: unless-stopped
   #   environment:
   #     AUTHENTIK_REDIS__HOST: redis
@@ -503,7 +503,7 @@ services:
   # authentik-worker:
   #   image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/goauthentik/server:2024.4.2
   #   command: worker
-  #   networks: [network_cluster]
+  #   networks: [network_swarm]
   #   restart: unless-stopped
   #   environment:
   #     AUTHENTIK_REDIS__HOST: redis
@@ -527,7 +527,7 @@ services:
   #         - node.labels.public == true
 
 networks:
-  network_cluster:
+  network_swarm:
     external: true
   common:
     external: true
