@@ -401,7 +401,7 @@ services:
       STASH_GIT_ENABLED: "true"
       STASH_GIT_PATH: "/data/.history"
       STASH_DB: "/data/stash.db"
-      STASH_SERVER_ADDRESS: "8282"
+      STASH_SERVER_ADDRESS: ":8282"
       APP_UID: "1000" 
     volumes:
       - nfs_stash_data:/data
