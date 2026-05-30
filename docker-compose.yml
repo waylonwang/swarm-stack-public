@@ -390,35 +390,35 @@ services:
   # ------------------------------------------------------------
   # Stash 配置管理
   # ------------------------------------------------------------
-  stash:
-    <<: *service-common-ref
-    # image-ref: ghcr.io/umputun/stash:v0.19.0
-    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/umputun/stash:v0.19.0
-    environment:
-      - STASH_AUTH_HOT_RELOAD=true
-      - STASH_AUTH_FILE=/data/stash-auth.yml
-      - STASH_GIT_ENABLED=true
-      - STASH_GIT_PATH=/data/.history
-      - STASH_DB=/data/stash.db
-      - STASH_SERVER_ADDRESS=8282
-    volumes:
-      - nfs_stash_data:/data
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.stash.rule=Host(`stash.${DOMAIN_SWARM}`,`stash.${DOMAIN_EMERGENCY}`)
-        - traefik.http.routers.stash.entrypoints=websecure
-        - traefik.http.routers.stash.service=stash
-        - traefik.http.routers.stash.middlewares=normal-chain@file
-        - traefik.http.services.stash.loadbalancer.server.port=8282 
-        - homepage.group=Public
-        - homepage.name=stash
-        - homepage.icon=stash.png
-        - homepage.href=https://stash.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-        - homepage.description=Stash 配置管理
-        - homepage.ping=stash
-        - homepage.weight=41
-      <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
+  # stash:
+  #   <<: *service-common-ref
+  #   # image-ref: ghcr.io/umputun/stash:v0.19.0
+  #   image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/umputun/stash:v0.19.0
+  #   environment:
+  #     - STASH_AUTH_HOT_RELOAD=true
+  #     - STASH_AUTH_FILE=/data/stash-auth.yml
+  #     - STASH_GIT_ENABLED=true
+  #     - STASH_GIT_PATH=/data/.history
+  #     - STASH_DB=/data/stash.db
+  #     - STASH_SERVER_ADDRESS=8282
+  #   volumes:
+  #     - nfs_stash_data:/data
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.stash.rule=Host(`stash.${DOMAIN_SWARM}`,`stash.${DOMAIN_EMERGENCY}`)
+  #       - traefik.http.routers.stash.entrypoints=websecure
+  #       - traefik.http.routers.stash.service=stash
+  #       - traefik.http.routers.stash.middlewares=normal-chain@file
+  #       - traefik.http.services.stash.loadbalancer.server.port=8282 
+  #       - homepage.group=Public
+  #       - homepage.name=stash
+  #       - homepage.icon=stash.png
+  #       - homepage.href=https://stash.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+  #       - homepage.description=Stash 配置管理
+  #       - homepage.ping=stash
+  #       - homepage.weight=41
+  #     <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
 
 
   # ------------------------------------------------------------
