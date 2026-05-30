@@ -394,12 +394,12 @@ services:
     <<: *service-common-ref
     # image-ref: ghcr.io/umputun/stash:v0.19.0
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/umputun/stash:v0.19.0
-    environment:
-      - STASH_DB=/data/stash.db
-      - STASH_AUTH_PASSWORD_HASH=${STASH_AUTH_PASSWORD_HASH}
-      - STASH_AUTH_AUTH_TOKEN=${STASH_AUTH_TOKEN}
-      - STASH_GIT_ENABLED=true
-      - STASH_GIT_PATH=/data/history
+    # environment:
+      # - STASH_DB=/data/stash.db
+      # - STASH_AUTH_PASSWORD_HASH=${STASH_AUTH_PASSWORD_HASH}
+      # - STASH_AUTH_AUTH_TOKEN=${STASH_AUTH_TOKEN}
+      # - STASH_GIT_ENABLED=true
+      # - STASH_GIT_PATH=/data/history
     # volumes:
     #   - nfs_stash_data:/data
     deploy:
