@@ -388,48 +388,81 @@ services:
   #       fluentd-async-connect: "true"
 
   # ------------------------------------------------------------
-  # CLIProxyAPI CLIProxyApi代理服务器
+  # Stash 配置管理
   # ------------------------------------------------------------
-  cli-proxy-api:
+  stash:
     <<: *service-common-ref
-    # image-ref: eceasy/cli-proxy-api:v6.8.18
-    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/eceasy/cli-proxy-api:v6.8.18
+    # image-ref: ghcr.io/umputun/stash:v0.19.0
+    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/umputun/stash:v0.19.0
     environment:
-      <<: *env-common-ref      
-      GITSTORE_GIT_TOKEN: ${CPA_GITSTORE_GIT_TOKEN}
-      GITSTORE_GIT_USERNAME: ${CPA_GITSTORE_GIT_USERNAME}
-      GITSTORE_LOCAL_PATH: ${CPA_GITSTORE_LOCAL_PATH}
-      GITSTORE_GIT_URL: ${CPA_GITSTORE_GIT_URL}
-      MANAGEMENT_PASSWORD: ${CPA_MANAGEMENT_PASSWORD}
-    volumes:
-      - nfs_cli-proxy-api_config:/CLIProxyAPI
-      - nfs_cli-proxy-api_profile:/root/.cli-proxy-api
-    ports:
-      - 8317:8317
-    # logging:
-    #   driver: fluentd
-    #   options:
-    #     tag: docker.public.cli-proxy-api
-    #     fluentd-async-connect: "true"
+      - STASH_DB=/data/stash.db
+      - STASH_AUTH_PASSWORD_HASH=${STASH_AUTH_PASSWORD_HASH}
+      - STASH_AUTH_AUTH_TOKEN=${STASH_AUTH_TOKEN}
+      - STASH_GIT_ENABLED=true
+      - STASH_GIT_PATH=/data/history
+    # volumes:
+    #   - nfs_stash_data:/data
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.http.routers.cli-proxy-api.rule=Host(`cpa.${DOMAIN_SWARM}`,`cpa.${DOMAIN_EMERGENCY}`)
-        - traefik.http.routers.cli-proxy-api.entrypoints=websecure
-        - traefik.http.routers.cli-proxy-api.service=cli-proxy-api
-        - traefik.http.middlewares.cpa-management.replacepathregex.regex=^/$$
-        - traefik.http.middlewares.cpa-management.replacepathregex.replacement=/management.html      
-        - traefik.http.routers.cli-proxy-api.middlewares=cpa-management,auth,normal-chain@file,cors-headers@file
-        - traefik.http.services.cli-proxy-api.loadbalancer.server.port=8317
+        - traefik.http.routers.stash.rule=Host(`stash.${DOMAIN_SWARM}`,`stash.${DOMAIN_EMERGENCY}`)
+        - traefik.http.routers.stash.entrypoints=websecure
+        - traefik.http.routers.stash.service=stash
+        - traefik.http.routers.stash.middlewares=normal-chain@file
+        - traefik.http.services.stash.loadbalancer.server.port=8181   
         - homepage.group=Public
-        - homepage.name=CLIProxyApi代理服务器
-        - homepage.icon=tailscale.png
-        - homepage.href=https://cpa.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-        - homepage.description=为CLI提供主流AI兼容API接口的代理服务器
-        - homepage.ping=cli-proxy-api
-        - homepage.siteMonitor=http://cli-proxy-api
+        - homepage.name=stash
+        - homepage.icon=stash.png
+        - homepage.href=https://stash.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+        - homepage.description=Stash 配置管理
+        - homepage.ping=stash
         - homepage.weight=41
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
+
+
+  # ------------------------------------------------------------
+  # CLIProxyAPI CLIProxyApi代理服务器
+  # ------------------------------------------------------------
+  # cli-proxy-api:
+  #   <<: *service-common-ref
+  #   # image-ref: eceasy/cli-proxy-api:v6.8.18
+  #   image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/eceasy/cli-proxy-api:v6.8.18
+  #   environment:
+  #     <<: *env-common-ref      
+  #     GITSTORE_GIT_TOKEN: ${CPA_GITSTORE_GIT_TOKEN}
+  #     GITSTORE_GIT_USERNAME: ${CPA_GITSTORE_GIT_USERNAME}
+  #     GITSTORE_LOCAL_PATH: ${CPA_GITSTORE_LOCAL_PATH}
+  #     GITSTORE_GIT_URL: ${CPA_GITSTORE_GIT_URL}
+  #     MANAGEMENT_PASSWORD: ${CPA_MANAGEMENT_PASSWORD}
+  #   volumes:
+  #     - nfs_cli-proxy-api_config:/CLIProxyAPI
+  #     - nfs_cli-proxy-api_profile:/root/.cli-proxy-api
+  #   ports:
+  #     - 8317:8317
+  #   # logging:
+  #   #   driver: fluentd
+  #   #   options:
+  #   #     tag: docker.public.cli-proxy-api
+  #   #     fluentd-async-connect: "true"
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.cli-proxy-api.rule=Host(`cpa.${DOMAIN_SWARM}`,`cpa.${DOMAIN_EMERGENCY}`)
+  #       - traefik.http.routers.cli-proxy-api.entrypoints=websecure
+  #       - traefik.http.routers.cli-proxy-api.service=cli-proxy-api
+  #       - traefik.http.middlewares.cpa-management.replacepathregex.regex=^/$$
+  #       - traefik.http.middlewares.cpa-management.replacepathregex.replacement=/management.html      
+  #       - traefik.http.routers.cli-proxy-api.middlewares=cpa-management,auth,normal-chain@file,cors-headers@file
+  #       - traefik.http.services.cli-proxy-api.loadbalancer.server.port=8317
+  #       - homepage.group=Public
+  #       - homepage.name=CLIProxyApi代理服务器
+  #       - homepage.icon=tailscale.png
+  #       - homepage.href=https://cpa.${DOMAIN_SWARM}:${EXTERNAL_PORT}
+  #       - homepage.description=为CLI提供主流AI兼容API接口的代理服务器
+  #       - homepage.ping=cli-proxy-api
+  #       - homepage.siteMonitor=http://cli-proxy-api
+  #       - homepage.weight=41
+  #     <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
 
 
   # VPN代理服务
