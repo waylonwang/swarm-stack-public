@@ -394,14 +394,15 @@ services:
     <<: *service-common-ref
     # image-ref: ghcr.io/umputun/stash:v0.19.0
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/umputun/stash:v0.19.0
-    # environment:
-      # - STASH_DB=/data/stash.db
-      # - STASH_AUTH_PASSWORD_HASH=${STASH_AUTH_PASSWORD_HASH}
-      # - STASH_AUTH_AUTH_TOKEN=${STASH_AUTH_TOKEN}
-      # - STASH_GIT_ENABLED=true
-      # - STASH_GIT_PATH=/data/history
-    # volumes:
-    #   - nfs_stash_data:/data
+    environment:
+      - STASH_AUTH_HOT_RELOAD=true
+      - STASH_AUTH_FILE=/data/stash-auth.yml
+      - STASH_GIT_ENABLED=true
+      - STASH_GIT_PATH=/data/.history
+      - STASH_DB=/data/stash.db
+      - STASH_SERVER_ADDRESS=8282
+    volumes:
+      - nfs_stash_data:/data
     deploy:
       labels:
         - traefik.enable=true
@@ -409,7 +410,7 @@ services:
         - traefik.http.routers.stash.entrypoints=websecure
         - traefik.http.routers.stash.service=stash
         - traefik.http.routers.stash.middlewares=normal-chain@file
-        - traefik.http.services.stash.loadbalancer.server.port=8181   
+        - traefik.http.services.stash.loadbalancer.server.port=8282 
         - homepage.group=Public
         - homepage.name=stash
         - homepage.icon=stash.png
@@ -632,13 +633,18 @@ volumes:
     driver_opts:
       <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/tailscale/lib      
-  nfs_cli-proxy-api_config:
+  # nfs_cli-proxy-api_config:
+  #   driver: local
+  #   driver_opts:
+  #     <<: *driver-common-ref
+  #     device: :${NFS_DEVICE}/public/cli-proxy-api/config
+  # nfs_cli-proxy-api_profile:
+  #   driver: local
+  #   driver_opts:
+  #     <<: *driver-common-ref
+  #     device: :${NFS_DEVICE}/public/cli-proxy-api/profile   
+  nfs_stash_data:   
     driver: local
     driver_opts:
       <<: *driver-common-ref
-      device: :${NFS_DEVICE}/public/cli-proxy-api/config
-  nfs_cli-proxy-api_profile:
-    driver: local
-    driver_opts:
-      <<: *driver-common-ref
-      device: :${NFS_DEVICE}/public/cli-proxy-api/profile      
+      device: :${NFS_DEVICE}/public/stash/data
