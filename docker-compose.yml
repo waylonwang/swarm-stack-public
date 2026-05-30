@@ -396,14 +396,14 @@ services:
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/umputun/stash:v0.19.0
     environment:
       <<: *env-common-ref      
-      - STASH_AUTH_HOT_RELOAD=true
-      - STASH_AUTH_FILE=/data/stash-auth.yml
-      - STASH_GIT_ENABLED=true
-      - STASH_GIT_PATH=/data/.history
-      - STASH_DB=/data/stash.db
-      - STASH_SERVER_ADDRESS=8282
-      - PUID=1000
-      - PGID=1000      
+      STASH_AUTH_HOT_RELOAD: "true"
+      STASH_AUTH_FILE: "/data/stash-auth.yml"
+      STASH_GIT_ENABLED: "true"
+      STASH_GIT_PATH: "/data/.history"
+      STASH_DB: "/data/stash.db"
+      STASH_SERVER_ADDRESS: 8282
+      PUID: 1000
+      PGID: 1000      
     volumes:
       - nfs_stash_data:/data
     deploy:
