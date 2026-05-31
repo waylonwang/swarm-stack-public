@@ -411,7 +411,7 @@ services:
         - traefik.http.routers.stash.rule=Host(`stash.${DOMAIN_SWARM}`,`stash.${DOMAIN_EMERGENCY}`)
         - traefik.http.routers.stash.entrypoints=websecure
         - traefik.http.routers.stash.service=stash
-        - traefik.http.routers.stash.middlewares=normal-chain@file
+        - traefik.http.routers.stash.middlewares=cors-headers@file,normal-chain@file
         - traefik.http.services.stash.loadbalancer.server.port=8282 
         - homepage.group=Public
         - homepage.name=stash
