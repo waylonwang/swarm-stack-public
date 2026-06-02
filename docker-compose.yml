@@ -237,17 +237,17 @@ services:
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.http.routers.pcm.rule=Host(`pcm.${DOMAIN_SWARM}`,`home.${DOMAIN_EMERGENCY}`)
+        - traefik.http.routers.pcm.rule=Host(`pcm.${DOMAIN_SWARM}`,`pcm.${DOMAIN_EMERGENCY}`)
         - traefik.http.routers.pcm.entrypoints=websecure
         - traefik.http.routers.pcm.service=pcm
         - traefik.http.routers.pcm.middlewares=auth,normal-chain@file,cors-headers@file
-        - traefik.http.services.pcm.loadbalancer.server.port=5173
+        - traefik.http.services.pcm.loadbalancer.server.port=80
         - homepage.group=Public
-        - homepage.name=PCM
+        - homepage.name=Personal Cloud Manager
         - homepage.icon=cloudvalley.png
         - homepage.href=https://pcm.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-        - homepage.description=Personal Cloud Manager
-        - homepage.ping=http://pcm:5173
+        - homepage.description=HomeLab个人云管理
+        - homepage.ping=http://pcm
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
 
   # ------------------------------------------------------------
