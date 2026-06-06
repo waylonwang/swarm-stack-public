@@ -234,8 +234,8 @@ services:
   pcm:
     <<: *service-common-ref
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/pcm/pcm:latest
-    volumes:
-      - nfs_pcm_srv:/srv
+    # volumes:
+    #   - nfs_pcm_srv:/srv
     deploy:
       labels:
         - traefik.enable=true
