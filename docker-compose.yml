@@ -228,29 +228,6 @@ services:
         - traefik.http.services.homepage.loadbalancer.server.port=3000
       <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
 
-  # ------------------------------------------------------------
-  # Personal Cloud Manager
-  # ------------------------------------------------------------
-  pcmt:
-    <<: *service-common-ref
-    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/pcm/pcm:latest
-    # volumes:
-    #   - nfs_pcm_srv:/srv
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.pcmt.rule=Host(`pcm.${DOMAIN_SWARM}`,`pcmt.${DOMAIN_EMERGENCY}`)
-        - traefik.http.routers.pcmt.entrypoints=websecure
-        - traefik.http.routers.pcmt.service=pcmt
-        - traefik.http.routers.pcmt.middlewares=auth,normal-chain@file,cors-headers@file
-        - traefik.http.services.pcmt.loadbalancer.server.port=80
-        - homepage.group=Public
-        - homepage.name=Personal Cloud Manager
-        - homepage.icon=cloudvalley.png
-        - homepage.href=https://pcm.t${DOMAIN_SWARM}:${EXTERNAL_PORT}
-        - homepage.description=HomeLab个人云管理
-        - homepage.ping=http://pcmt
-      <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
 
   # ------------------------------------------------------------
   # Tailscale 异地组网服务
@@ -410,41 +387,6 @@ services:
   #     options:
   #       tag: docker.public.headscale-webui
   #       fluentd-async-connect: "true"
-
-  # ------------------------------------------------------------
-  # Stash 配置管理
-  # ------------------------------------------------------------
-  stash:
-    <<: *service-common-ref
-    # image-ref: ghcr.io/umputun/stash:v0.19.0
-    image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/umputun/stash:v0.19.0
-    environment:
-      <<: *env-common-ref      
-      STASH_AUTH_HOT_RELOAD: "true"
-      STASH_AUTH_FILE: "/data/stash-auth.yml"
-      STASH_GIT_ENABLED: "true"
-      STASH_GIT_PATH: "/data/.history"
-      STASH_DB: "/data/stash.db"
-      STASH_SERVER_ADDRESS: ":8282"
-      APP_UID: "1000" 
-    volumes:
-      - nfs_stash_data:/data
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.stash.rule=Host(`stash.${DOMAIN_SWARM}`,`stash.${DOMAIN_EMERGENCY}`)
-        - traefik.http.routers.stash.entrypoints=websecure
-        - traefik.http.routers.stash.service=stash
-        - traefik.http.routers.stash.middlewares=cors-headers@file,normal-chain@file
-        - traefik.http.services.stash.loadbalancer.server.port=8282 
-        - homepage.group=Public
-        - homepage.name=stash
-        - homepage.icon=stash.png
-        - homepage.href=https://stash.${DOMAIN_SWARM}:${EXTERNAL_PORT}
-        - homepage.description=Stash 配置管理
-        - homepage.ping=stash
-        - homepage.weight=41
-      <<: [*deploy-common-ref, *placement-default-ref, *restart-default-ref, *update-default-ref]
 
 
   # ------------------------------------------------------------
@@ -668,14 +610,5 @@ volumes:
   #   driver: local
   #   driver_opts:
   #     <<: *driver-common-ref
-  #     device: :${NFS_DEVICE}/public/cli-proxy-api/profile   
-  nfs_stash_data:   
-    driver: local
-    driver_opts:
-      <<: *driver-common-ref
-      device: :${NFS_DEVICE}/public/stash/data
-  nfs_pcm_srv:   
-    driver: local
-    driver_opts:
-      <<: *driver-common-ref
-      device: :${NFS_DEVICE}/public/pcm/srv      
+  #     device: :${NFS_DEVICE}/public/cli-proxy-api/profile     
+...
