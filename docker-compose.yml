@@ -234,6 +234,8 @@ services:
   pcm:
     <<: *service-common-ref
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/pcm/pcm:latest
+    volumes:
+      - nfs_pcm_srv:/srv
     deploy:
       labels:
         - traefik.enable=true
@@ -672,3 +674,8 @@ volumes:
     driver_opts:
       <<: *driver-common-ref
       device: :${NFS_DEVICE}/public/stash/data
+  nfs_pcm_srv:   
+    driver: local
+    driver_opts:
+      <<: *driver-common-ref
+      device: :${NFS_DEVICE}/public/pcm/srv      
