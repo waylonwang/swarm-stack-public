@@ -529,18 +529,19 @@ services:
   #         - node.labels.public == true
 
   # ------------------------------------------------------------
-  # Watchtower 镜像更新守望
+  # Watchtower 日常镜像更新守望
   # ------------------------------------------------------------
-  watchtower:
+  watchtower-daily:
     <<: *service-common-ref
     # image-ref: containrrr/watchtower:1.7.1
     image: registry.${DOMAIN_SWARM}:${EXTERNAL_PORT}/containrrr/watchtower:1.7.1 
     environment:
       <<: *env-common-ref    
       WATCHTOWER_CLEANUP: "true"
-      WATCHTOWER_LOG_LEVEL: "JSON"
-      WATCHTOWER_POLL_INTERVAL: 600
+      WATCHTOWER_LOG_LEVEL: "Pretty"
+      WATCHTOWER_POLL_INTERVAL: 86400
       WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_SCOPE: "daily_update"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
