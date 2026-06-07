@@ -538,7 +538,6 @@ services:
     environment:
       <<: *env-common-ref    
       WATCHTOWER_CLEANUP: "true"
-      WATCHTOWER_LOG_LEVEL: "Pretty"
       WATCHTOWER_POLL_INTERVAL: 86400
       WATCHTOWER_LABEL_ENABLE: "true"
       WATCHTOWER_SCOPE: "daily_update"
